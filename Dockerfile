@@ -66,8 +66,6 @@ RUN composer dump-autoload \
 # Production Laravel image.
 FROM php:8.4-apache
 
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
 WORKDIR /var/www/html
 
 RUN apt-get update \
@@ -83,32 +81,35 @@ RUN apt-get update \
         libxml2-dev \
         libzip-dev \
         unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" \
-        bcmath \
-        curl \
-        exif \
-        gd \
-        intl \
-        mbstring \
-        opcache \
-        pcntl \
-        pdo_pgsql \
-        pdo_mysql \
-        pdo_sqlite \
-        xml \
-        zip \
-    && a2enmod rewrite \
-    && sed -ri "s!DocumentRoot /var/www/html!DocumentRoot ${APACHE_DOCUMENT_ROOT}!g" \
-        /etc/apache2/sites-available/*.conf \
-        /etc/apache2/sites-enabled/*.conf \
-    && sed -ri "s!<Directory /var/www/>!<Directory ${APACHE_DOCUMENT_ROOT}>!g" \
-        /etc/apache2/apache2.conf \
     && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" \
+        bcmath curl exif gd intl mbstring opcache pcntl pdo_pgsql pdo_mysql pdo_sqlite xml zip
+
+# Configure Apache once. Do not edit both sites-available and sites-enabled:
+# the latter contains symlinks to the same vhost files, so editing both applies
+# the replacement twice and produces /var/www/html/public/public.
+RUN a2enmod rewrite \
+    && sed -ri 's#DocumentRoot /var/www/html$#DocumentRoot /var/www/html/public#g' \
+        /etc/apache2/sites-available/*.conf \
+    && sed -ri 's#<Directory /var/www/>#<Directory /var/www/html/public>#g' \
+        /etc/apache2/apache2.conf \
+    && printf '%s\n' \
+        '<Directory /var/www/html/public>' \
+        '    Options FollowSymLinks' \
+        '    AllowOverride All' \
+        '    Require all granted' \
+        '</Directory>' \
+        'DirectoryIndex index.php index.html' \
+        > /etc/apache2/conf-available/laravel.conf \
+    && a2enconf laravel \
+    && apachectl -t
 
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+RUN test -f public/index.php
 
 RUN mkdir -p \
         storage/app/public \
@@ -116,6 +117,7 @@ RUN mkdir -p \
         storage/framework/sessions \
         storage/framework/views \
         storage/logs \
+    && rm -f bootstrap/cache/*.php \
     && chown -R www-data:www-data storage bootstrap/cache \
     && printf '%s\n' \
         'opcache.enable=1' \
