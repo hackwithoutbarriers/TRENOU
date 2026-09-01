@@ -104,11 +104,21 @@ RUN apt-get update \
         /etc/apache2/sites-enabled/*.conf \
     && sed -ri "s!<Directory /var/www/>!<Directory ${APACHE_DOCUMENT_ROOT}>!g" \
         /etc/apache2/apache2.conf \
+    && printf '%s\n' \
+        '<Directory /var/www/html/public>' \
+        '    Options FollowSymLinks' \
+        '    AllowOverride All' \
+        '    Require all granted' \
+        '</Directory>' \
+        'DirectoryIndex index.php index.html' \
+        > /etc/apache2/conf-available/laravel.conf \
+    && a2enconf laravel \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+RUN test -f public/index.php
 
 RUN mkdir -p \
         storage/app/public \
