@@ -66,11 +66,6 @@ RUN composer dump-autoload \
 # Production Laravel image.
 FROM php:8.4-apache
 
-# Keep the base image's document-root variable at the application root. The
-# Apache configuration below sets the Laravel public directory explicitly and
-# prevents the image entrypoint from appending "/public" twice.
-ENV APACHE_DOCUMENT_ROOT=/var/www/html
-
 WORKDIR /var/www/html
 
 RUN apt-get update \
@@ -86,26 +81,17 @@ RUN apt-get update \
         libxml2-dev \
         libzip-dev \
         unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
-        bcmath \
-        curl \
-        exif \
-        gd \
-        intl \
-        mbstring \
-        opcache \
-        pcntl \
-        pdo_pgsql \
-        pdo_mysql \
-        pdo_sqlite \
-        xml \
-        zip \
-    && a2enmod rewrite \
-    && sed -ri "s!DocumentRoot /var/www/html$!DocumentRoot /var/www/html/public!g" \
+        bcmath curl exif gd intl mbstring opcache pcntl pdo_pgsql pdo_mysql pdo_sqlite xml zip
+
+RUN a2enmod rewrite \
+    && sed -ri 's#DocumentRoot /var/www/html#DocumentRoot /var/www/html/public#g' \
         /etc/apache2/sites-available/*.conf \
         /etc/apache2/sites-enabled/*.conf \
-    && sed -ri "s!<Directory /var/www/>!<Directory /var/www/html/public>!g" \
+    && sed -ri 's#<Directory /var/www/>#<Directory /var/www/html/public>#g' \
         /etc/apache2/apache2.conf \
     && printf '%s\n' \
         '<Directory /var/www/html/public>' \
@@ -116,7 +102,7 @@ RUN apt-get update \
         'DirectoryIndex index.php index.html' \
         > /etc/apache2/conf-available/laravel.conf \
     && a2enconf laravel \
-    && rm -rf /var/lib/apt/lists/*
+    && apachectl -t
 
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
