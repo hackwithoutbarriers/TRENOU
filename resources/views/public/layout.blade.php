@@ -35,7 +35,7 @@
                 'areaServed' => ['Lomé', 'Togo'],
                 'priceRange' => '$$$',
                 'sameAs' => [
-                    'https://wa.me/22890000000',
+                    'https://wa.me/22890585976',
                 ],
             ];
         @endphp

@@ -1,0 +1,9 @@
+HTTP/1.0 405 Method Not Allowed
+Host: 127.0.0.1:8000
+Connection: close
+X-Powered-By: PHP/8.5.10
+Allow: GET, HEAD
+Cache-Control: no-cache, private
+Date: Tue, 01 Sep 2026 00:09:19 GMT
+Content-Type: application/json
+
