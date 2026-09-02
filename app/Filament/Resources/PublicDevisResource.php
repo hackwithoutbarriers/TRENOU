@@ -95,6 +95,16 @@ class PublicDevisResource extends Resource
                 Tables\Columns\TextColumn::make('pays')
                     ->label('Pays')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('sous_type')
+                    ->label('Projet')
+                    ->placeholder('—')
+                    ->formatStateUsing(fn (?string $state): string => $state ? str_replace('-', ' ', ucfirst($state)) : '—'),
+                Tables\Columns\TextColumn::make('estimation_min')
+                    ->label('Estimation')
+                    ->placeholder('—')
+                    ->formatStateUsing(fn (?int $state, PublicDevis $record): string => $state === null
+                        ? '—'
+                        : number_format($state, 0, ',', ' ').' — '.number_format((int) ($record->estimation_max ?? $state), 0, ',', ' ').' '.($record->devise ?? 'FCFA')),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date')
                     ->dateTime()

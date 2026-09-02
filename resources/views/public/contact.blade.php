@@ -16,7 +16,7 @@
                 <div class="mt-8 space-y-4 text-sm text-slate-700">
                     <div class="rounded-2xl border border-stone-200 bg-white p-4">
                         <span class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Téléphone</span>
-                        <a href="https://wa.me/{{ config('services.whatsapp.number', '22890000000') }}" class="mt-2 inline-block font-semibold text-emerald-600">{{ config('services.whatsapp.number', '+228 90 00 00 00') }}</a>
+                        <a href="https://wa.me/{{ config('services.whatsapp.number', '22890585976') }}" class="mt-2 inline-block font-semibold text-emerald-600">{{ config('services.whatsapp.number', '+228 90 00 00 00') }}</a>
                     </div>
                     <div class="rounded-2xl border border-stone-200 bg-white p-4">
                         <span class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Email</span>
@@ -75,7 +75,7 @@
                     </label>
 
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <a href="{{ 'https://wa.me/' . config('services.whatsapp.number', '22890000000') . '?text=' . urlencode('Bonjour, je souhaite en savoir plus.') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600">
+                        <a href="{{ 'https://wa.me/' . config('services.whatsapp.number', '22890585976') . '?text=' . urlencode('Bonjour, je souhaite en savoir plus.') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600">
                             WhatsApp
                         </a>
                         <button type="submit" class="inline-flex items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-amber-400">
