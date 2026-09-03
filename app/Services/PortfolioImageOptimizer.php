@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\ImageManager;
 
 class PortfolioImageOptimizer
 {
@@ -17,6 +17,7 @@ class PortfolioImageOptimizer
     {
         $optimized = [];
         $disk = Storage::disk('public');
+        $imageManager = ImageManager::gd();
 
         foreach ($paths as $path) {
             if (blank($path)) {
@@ -42,7 +43,7 @@ class PortfolioImageOptimizer
             $webpPath = preg_replace('/\.[^.]+$/', '.webp', $path);
             $webpAbsolutePath = $disk->path($webpPath);
 
-            Image::read($absolutePath)
+            $imageManager->read($absolutePath)
                 ->resizeDown(1600, 1200)
                 ->toWebp(72)
                 ->save($webpAbsolutePath);
