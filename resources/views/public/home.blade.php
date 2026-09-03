@@ -1,7 +1,7 @@
 @extends('public.layout')
 
-@section('title', 'Menuisier aluminium Lomé | TRENOU')
-@section('meta_description', 'Menuisier aluminium Lomé, baie vitrée aluminium Togo et mobilier sur mesure pour la construction, la rénovation et l’aménagement.')
+@section('title', config('business.name').' | Menuiserie Aluminium & Vitrerie')
+@section('meta_description', config('business.activities'))
 
 @section('content')
     <section class="relative isolate overflow-hidden bg-slate-900 text-white">
@@ -14,13 +14,13 @@
         <div class="relative mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:px-8 lg:py-20">
             <div>
                 <span class="inline-flex rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-200 backdrop-blur-sm">
-                    Aluminium de qualité marine
+                    {{ config('business.name') }}
                 </span>
                 <h1 class="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
                     Des ouvertures et mobiliers aluminium conçus pour le climat côtier de Lomé.
                 </h1>
                 <p class="mt-4 max-w-xl text-base text-slate-200 sm:text-lg">
-                    TRENOU réalise des baies vitrées, des façades, des cuisines, des comptoirs et des aménagements sur mesure pour les particuliers, les professionnels et les clients de la diaspora, avec un souci constant de durabilité, d’esthétique et de précision.
+                    {{ config('business.activities') }} Atelier dirigé par {{ config('business.manager') }}, {{ config('business.expertise') }}.
                 </p>
 
                 <div class="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -67,6 +67,42 @@
         </div>
     </section>
 
+    @php
+        $reviews = app(\App\ReviewData::class)->mergedReviews();
+        $summary = app(\App\ReviewData::class)->summary();
+        $featuredReviews = array_values(array_filter($reviews, function (array $review): bool {
+            return (int) ($review['rating'] ?? 0) >= 4;
+        }));
+        $carouselReviews = array_merge($featuredReviews, $featuredReviews);
+    @endphp
+
+
+    <style>
+        .testimonial-track {
+            width: max-content;
+            min-width: 100%;
+            animation: marquee 24s linear infinite;
+        }
+
+        @media (max-width: 767px) {
+            .testimonial-track {
+                animation: none;
+                overflow-x: auto;
+                padding-bottom: 0.25rem;
+                scrollbar-width: none;
+            }
+
+            .testimonial-track::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+
     <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div class="mb-6 flex items-end justify-between gap-4">
             <div>
@@ -97,7 +133,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Réassurance diaspora</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Notre expertise</p>
                     <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Un accompagnement rigoureux, même à distance</h2>
                     <p class="mt-4 text-base leading-7 text-slate-600">
                         Pour les clients installés en Europe ou en Afrique de l’Ouest, nous assurons un suivi simple et transparent : devis détaillé, preuve par l’image, échanges clairs et contact direct via WhatsApp. Chaque étape est documentée pour garantir la confiance avant même la commande.
@@ -105,6 +141,9 @@
                     <p class="mt-4 text-base leading-7 text-slate-600">
                         Nous préparons des plans, confirmons les choix de finitions, vérifions les dimensions et coordonnons la livraison ou la pose sur site avec un dialogue constant avec le client.
                     </p>
+                    <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-slate-800">
+                        Atelier dirigé par {{ config('business.manager') }}, {{ config('business.expertise') }}.
+                    </div>
                 </div>
 
                 <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">

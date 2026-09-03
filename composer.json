@@ -8,13 +8,13 @@
     "require": {
         "php": "^8.4",
         "bacon/bacon-qr-code": "^3.1",
-        "barryvdh/laravel-dompdf": "^3.0",
         "filament/filament": "^3.3.55",
         "intervention/image-laravel": "^1.0",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^3.3",
-        "pragmarx/google2fa-laravel": "^3.0"
+        "pragmarx/google2fa-laravel": "^3.0",
+        "spatie/browsershot": "^5.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

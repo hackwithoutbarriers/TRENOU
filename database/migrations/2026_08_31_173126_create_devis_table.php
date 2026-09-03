@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('montant_main_doeuvre', 12, 2);
             $table->decimal('montant_total', 12, 2);
             $table->unsignedTinyInteger('acompte_requis_pourcentage')->default(0);
-            $table->enum('statut', ['brouillon', 'envoye', 'accepte', 'refuse'])->default('brouillon');
+            $table->enum('statut', ['brouillon', 'envoye', 'accepte', 'livre', 'refuse'])->default('brouillon');
             $table->timestamps();
         });
     }
