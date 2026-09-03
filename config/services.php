@@ -39,4 +39,9 @@ return [
         'number' => env('WHATSAPP_NUMBER', '22890585976'),
     ],
 
+    'google' => [
+        'key' => env('GOOGLE_PLACES_KEY'),
+        'place_id' => env('GOOGLE_PLACE_ID'),
+    ],
+
 ];

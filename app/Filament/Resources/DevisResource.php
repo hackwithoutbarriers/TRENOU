@@ -58,28 +58,62 @@ class DevisResource extends Resource
                     Forms\Components\Textarea::make('description_chantier')
                         ->label('Description du chantier')
                         ->required()
-                        ->rows(5)
+                        ->rows(7)
+                        ->columnSpanFull(),
+
+                    Forms\Components\Repeater::make('lignes_facturation')
+                        ->label('Lignes de facturation')
+                        ->schema([
+                            Forms\Components\TextInput::make('designation')
+                                ->label('Titre de la prestation')
+                                ->required(),
+                            Forms\Components\Textarea::make('description')
+                                ->label('Description / mesures')
+                                ->rows(2)
+                                ->placeholder('Ex. L 1,20 m x H 2,10 m, vitrage double...')
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('quantite')
+                                ->label('Quantité')
+                                ->numeric()
+                                ->required()
+                                ->default(1)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateLineTotals($get, $set)),
+                            Forms\Components\TextInput::make('prix_unitaire')
+                                ->label('Prix unitaire')
+                                ->numeric()
+                                ->required()
+                                ->prefix('FCFA ')
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateLineTotals($get, $set)),
+                            Forms\Components\TextInput::make('total')
+                                ->label('Total')
+                                ->numeric()
+                                ->prefix('FCFA ')
+                                ->disabled()
+                                ->dehydrated()
+                                ->formatStateUsing(fn ($state, Forms\Get $get): float => (float) ($get('quantite') ?? 0) * (float) ($get('prix_unitaire') ?? 0)),
+                        ])
+                        ->columns(5)
+                        ->defaultItems(1)
+                        ->live()
+                        ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set))
                         ->columnSpanFull(),
 
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\TextInput::make('montant_materiel')
-                            ->label('Matériel')
-                            ->required()
+                        Forms\Components\TextInput::make('total_prestations')
+                            ->label('Total prestations')
                             ->numeric()
                             ->prefix('FCFA ')
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                $set('montant_total', ((float) ($get('montant_materiel') ?? 0)) + ((float) ($get('montant_main_doeuvre') ?? 0)));
-                            }),
+                            ->disabled()
+                            ->dehydrated(false),
                         Forms\Components\TextInput::make('montant_main_doeuvre')
                             ->label('Main-d’œuvre')
                             ->required()
                             ->numeric()
                             ->prefix('FCFA ')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                $set('montant_total', ((float) ($get('montant_materiel') ?? 0)) + ((float) ($get('montant_main_doeuvre') ?? 0)));
-                            }),
+                            ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set)),
                     ]),
 
                     Forms\Components\Grid::make(2)->schema([
@@ -95,6 +129,7 @@ class DevisResource extends Resource
                                 'brouillon' => 'Brouillon',
                                 'envoye' => 'Envoyé',
                                 'accepte' => 'Accepté',
+                                'livre' => 'Livré',
                                 'refuse' => 'Refusé',
                             ])
                             ->default('brouillon')
@@ -110,10 +145,34 @@ class DevisResource extends Resource
                         ->formatStateUsing(function ($state, $record) {
                             $value = $state ?? (($record?->montant_materiel ?? 0) + ($record?->montant_main_doeuvre ?? 0));
 
-                            return number_format((float) $value, 2, ',', ' ');
+                            return (float) $value;
                         }),
                 ]),
             ]);
+    }
+
+    private static function updateLineTotals(Forms\Get $get, Forms\Set $set): void
+    {
+        $set('total', (float) ($get('quantite') ?? 0) * (float) ($get('prix_unitaire') ?? 0));
+        self::updateGrandTotals($get, $set);
+    }
+
+    private static function updateGrandTotals(Forms\Get $get, Forms\Set $set): void
+    {
+        $lines = $get('lignes_facturation');
+        $basePath = '';
+
+        if (! is_array($lines)) {
+            $lines = $get('../../lignes_facturation');
+            $basePath = '../../';
+        }
+
+        $totalPrestations = collect(is_array($lines) ? $lines : [])->sum(
+            fn (array $line): float => (float) ($line['quantite'] ?? 0) * (float) ($line['prix_unitaire'] ?? 0)
+        );
+
+        $set($basePath.'total_prestations', $totalPrestations);
+        $set($basePath.'montant_total', $totalPrestations + (float) ($get($basePath.'montant_main_doeuvre') ?? 0));
     }
 
     public static function table(Table $table): Table
@@ -150,7 +209,8 @@ class DevisResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'brouillon' => 'gray',
                         'envoye' => 'warning',
-                        'accepte' => 'success',
+                        'accepte' => 'info',
+                        'livre' => 'success',
                         'refuse' => 'danger',
                         default => 'gray',
                     })
@@ -158,6 +218,7 @@ class DevisResource extends Resource
                         'brouillon' => 'Brouillon',
                         'envoye' => 'Envoyé',
                         'accepte' => 'Accepté',
+                        'livre' => 'Livré',
                         'refuse' => 'Refusé',
                         default => ucfirst($state),
                     }),
@@ -169,6 +230,7 @@ class DevisResource extends Resource
                         'brouillon' => 'Brouillon',
                         'envoye' => 'Envoyé',
                         'accepte' => 'Accepté',
+                        'livre' => 'Livré',
                         'refuse' => 'Refusé',
                     ]),
                 SelectFilter::make('client_pays')

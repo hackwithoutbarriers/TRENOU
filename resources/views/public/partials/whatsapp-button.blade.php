@@ -1,5 +1,5 @@
 @php
-    $whatsappNumber = config('services.whatsapp.number', '22890585976');
+    $whatsappNumber = config('business.phone_digits');
     $whatsappMessage = urlencode('Bonjour, je souhaite en savoir plus.');
     $whatsappHref = 'https://wa.me/' . $whatsappNumber . '?text=' . $whatsappMessage;
 @endphp

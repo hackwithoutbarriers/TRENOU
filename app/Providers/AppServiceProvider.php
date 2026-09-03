@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use Illuminate\Database\Schema\Builder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,31 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (! class_exists(Builder::class) || ! app('db')->getSchemaBuilder()->hasTable('users')) {
-            return;
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
         }
-
-        $superuser = User::where('email', 'agbokpeablamvi@gmail.com')->first();
-
-        if ($superuser) {
-            $superuser->forceFill([
-                'name' => 'Super Administrateur TRENOU',
-                'password' => Hash::make('TRENOU@Super2026!'),
-                'status' => User::STATUS_APPROVED,
-                'is_superuser' => true,
-                'approved_at' => now(),
-            ])->save();
-
-            return;
-        }
-
-        User::create([
-            'name' => 'Super Administrateur TRENOU',
-            'email' => 'agbokpeablamvi@gmail.com',
-            'password' => Hash::make('TRENOU@Super2026!'),
-            'status' => User::STATUS_APPROVED,
-            'is_superuser' => true,
-            'approved_at' => now(),
-        ]);
     }
 }

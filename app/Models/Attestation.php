@@ -9,6 +9,11 @@ class Attestation extends Model
     protected $fillable = [
         'numero_attestation',
         'apprenti_nom_prenom',
+        'photo_profil',
+        'date_naissance',
+        'lieu_naissance',
+        'nationalite',
+        'type_document',
         'date_debut_apprentissage',
         'date_fin_apprentissage',
         'specialisations',
@@ -17,6 +22,7 @@ class Attestation extends Model
 
     protected $casts = [
         'date_debut_apprentissage' => 'date',
+        'date_naissance' => 'date',
         'date_fin_apprentissage' => 'date',
         'date_delivrance' => 'date',
         'created_at' => 'datetime',

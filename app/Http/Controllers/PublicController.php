@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePublicContactRequest;
 use App\Http\Requests\StorePublicDevisRequest;
+use App\Models\ContactMessage;
 use App\Models\Projet;
 use App\Models\PublicDevis;
+use App\ReviewData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -14,6 +16,7 @@ class PublicController extends Controller
     public function home()
     {
         $featuredProjects = collect();
+        $reviewsSummary = app(ReviewData::class)->summary();
 
         if (Schema::hasTable('projets')) {
             $featuredProjects = Projet::query()
@@ -23,7 +26,7 @@ class PublicController extends Controller
                 ->get();
         }
 
-        return view('public.home', compact('featuredProjects'));
+        return view('public.home', compact('featuredProjects', 'reviewsSummary'));
     }
 
     public function services()
@@ -123,7 +126,7 @@ class PublicController extends Controller
 
     public function storeContact(StorePublicContactRequest $request)
     {
-        $validated = $request->validated();
+        ContactMessage::create($request->validated());
 
         return redirect()->route('contact')->with('success', 'Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.');
     }

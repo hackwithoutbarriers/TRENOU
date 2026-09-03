@@ -1,7 +1,7 @@
 @extends('public.layout')
 
-@section('title', 'Contact menuisier aluminium Lomé | TRENOU')
-@section('meta_description', 'Contactez TRENOU, menuisier aluminium Lomé et Togo pour une baie vitrée, une rénovation ou un mobilier sur mesure.')
+@section('title', 'Contact | '.config('business.name'))
+@section('meta_description', 'Contactez '.config('business.name').' pour vos travaux de '.config('business.activities'))
 
 @section('content')
     <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
@@ -10,21 +10,21 @@
                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Contact</p>
                 <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Parlons de votre projet</h1>
                 <p class="mt-4 text-base leading-7 text-slate-600">
-                    Nous sommes à votre écoute pour vous accompagner dans vos projets de construction, rénovation et mobilier sur mesure à Lomé et dans tout le Togo.
+                    {{ config('business.activities') }} Notre atelier vous accompagne à Lomé et dans tout le Togo.
                 </p>
 
                 <div class="mt-8 space-y-4 text-sm text-slate-700">
                     <div class="rounded-2xl border border-stone-200 bg-white p-4">
                         <span class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Téléphone</span>
-                        <a href="https://wa.me/{{ config('services.whatsapp.number', '22890585976') }}" class="mt-2 inline-block font-semibold text-emerald-600">{{ config('services.whatsapp.number', '+228 90 00 00 00') }}</a>
+                        <a href="https://wa.me/{{ config('business.phone_digits') }}" class="mt-2 inline-block font-semibold text-emerald-600">{{ config('business.phone') }}</a>
                     </div>
                     <div class="rounded-2xl border border-stone-200 bg-white p-4">
                         <span class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Email</span>
-                        <a href="mailto:bonjour@trenou.tg" class="mt-2 inline-block font-semibold text-slate-900">bonjour@trenou.tg</a>
+                        <a href="mailto:{{ config('business.email') }}" class="mt-2 inline-block font-semibold text-slate-900">{{ config('business.email') }}</a>
                     </div>
                     <div class="rounded-2xl border border-stone-200 bg-white p-4">
                         <span class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Adresse</span>
-                        <p class="mt-2 font-semibold text-slate-900">Lomé, Togo</p>
+                        <p class="mt-2 font-semibold text-slate-900">{{ config('business.address') }}</p>
                     </div>
                 </div>
             </div>
