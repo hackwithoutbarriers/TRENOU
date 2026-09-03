@@ -272,10 +272,6 @@
             ? 'mois'
             : ($dureeAnnees === 1 ? 'an' : 'ans');
 
-        // Élision "de" / "d'" devant la spécialisation (ex. "en qualité d'Apprenti...")
-        $specialisation = trim($attestation->specialisations);
-        $premiereLettre = mb_strtolower(mb_substr($specialisation, 0, 1));
-        $article = in_array($premiereLettre, ['a', 'e', 'i', 'o', 'u', 'h', 'y']) ? "d’" : 'de ';
     @endphp
 
     <div class="page">
@@ -300,7 +296,7 @@
             <div class="content-inner">
                 <h1>ATTESTATION DE TRAVAIL</h1>
                 <div class="body">
-                    <p>Je soussigné Monsieur <strong>{{ config('business.manager') }}</strong>, {{ config('business.manager_title') }}, Directeur de l’Etablissement <strong>{{ config('business.name') }}</strong>, atteste que le nommé <strong>{{ $attestation->apprenti_nom_prenom }}</strong>, a servi sous mes ordres en qualité {{ $article }}<strong>{{ $specialisation }}</strong> pendant une durée de <strong>{{ $dureeLettres }} ({{ sprintf('%02d', $dureeValeur) }} {{ $dureeUnite }})</strong> à compter du <strong>{{ $frDate($attestation->date_debut_apprentissage) }}</strong> au <strong>{{ $frDate($attestation->date_fin_apprentissage) }}</strong>.</p>
+                    <p>Je soussigné Monsieur <strong>{{ config('business.manager') }}</strong>, {{ config('business.manager_title') }}, Directeur de l’Etablissement <strong>{{ config('business.name') }}</strong>, atteste que le nommé <strong>{{ $attestation->apprenti_nom_prenom }}</strong> a servi sous mes ordres pendant une durée de <strong>{{ $dureeLettres }} ({{ sprintf('%02d', $dureeValeur) }} {{ $dureeUnite }})</strong> à compter du <strong>{{ $frDate($attestation->date_debut_apprentissage) }}</strong> au <strong>{{ $frDate($attestation->date_fin_apprentissage) }}</strong>.</p>
                     <p>En foi de quoi, je lui délivre cette présente <strong>Attestation de Travail</strong> pour servir et valoir ce que de droit.</p>
                 </div>
             </div>

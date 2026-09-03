@@ -73,10 +73,6 @@ class CertificatResource extends Resource
                         ->required()
                         ->maxLength(255),
                 ]),
-                Forms\Components\TextInput::make('specialisations')
-                    ->label('Spécialisation(s)')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\DatePicker::make('date_debut_apprentissage')
                         ->label('Début de l’apprentissage')
@@ -108,9 +104,6 @@ class CertificatResource extends Resource
                     ->label('Apprenti')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('specialisations')
-                    ->label('Spécialisation')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('date_delivrance')
                     ->label('Délivré le')
                     ->date()

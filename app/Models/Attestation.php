@@ -16,7 +16,6 @@ class Attestation extends Model
         'type_document',
         'date_debut_apprentissage',
         'date_fin_apprentissage',
-        'specialisations',
         'date_delivrance',
     ];
 

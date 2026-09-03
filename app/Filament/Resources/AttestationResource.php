@@ -91,10 +91,6 @@ class AttestationResource extends Resource
                             ->label('Date de fin de travail / apprentissage')
                             ->required(),
                     ]),
-                    Forms\Components\TextInput::make('specialisations')
-                        ->label('Fonction / spécialisation(s)')
-                        ->required()
-                        ->maxLength(255),
                     Forms\Components\DatePicker::make('date_delivrance')
                         ->label('Date de délivrance')
                         ->required(),
@@ -114,9 +110,6 @@ class AttestationResource extends Resource
                     ->label('Apprenti')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('specialisations')
-                    ->label('Spécialisation')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('date_debut_apprentissage')
                     ->label('Début')
                     ->date()
