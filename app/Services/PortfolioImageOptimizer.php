@@ -42,12 +42,9 @@ class PortfolioImageOptimizer
             $webpPath = preg_replace('/\.[^.]+$/', '.webp', $path);
             $webpAbsolutePath = $disk->path($webpPath);
 
-            Image::make($absolutePath)
-                ->resizeDown(1600, 1200, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                })
-                ->encode('webp', 72)
+            Image::read($absolutePath)
+                ->resizeDown(1600, 1200)
+                ->toWebp(72)
                 ->save($webpAbsolutePath);
 
             if ($path !== $webpPath && file_exists($absolutePath)) {

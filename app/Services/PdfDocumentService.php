@@ -41,6 +41,11 @@ class PdfDocumentService
                 $browserShot->setNpmBinary($npmBinary);
             }
 
+            $nodeModulePath = config('browsershot.node_module_path');
+            if (is_string($nodeModulePath) && $nodeModulePath !== '') {
+                $browserShot->setNodeModulePath($nodeModulePath);
+            }
+
             $chromePath = config('browsershot.chrome_path');
             if (is_string($chromePath) && $chromePath !== '') {
                 $browserShot->setChromePath($chromePath);
