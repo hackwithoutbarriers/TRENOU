@@ -5,6 +5,7 @@ namespace App;
 use App\Models\Temoignage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewData
 {
@@ -95,7 +96,9 @@ class ReviewData
                     'text' => $review->texte,
                     'date' => $review->date_projet?->toDateString() ?? $review->created_at->toDateString(),
                     'verified' => $review->isVerified(),
-                    'photo' => $review->photo_projet,
+                    'photo' => $review->photo_projet
+                        ? Storage::disk(config('filesystems.default'))->url($review->photo_projet)
+                        : null,
                     'project' => $review->projet_ref ?? $review->projet_type,
                 ];
             })
