@@ -35,6 +35,16 @@
                         {{ session('success') }}
                     </div>
                 @endif
+                @if ($errors->any())
+                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+                        <p class="font-semibold">Vérifiez les informations saisies :</p>
+                        <ul class="mt-2 list-disc space-y-1 pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <h2 class="text-xl font-bold text-slate-900">Besoin d’un retour rapide ?</h2>
                 <p class="mt-3 text-sm leading-7 text-slate-600">Échangez directement avec l’équipe via WhatsApp ou passez par le formulaire ci-dessous.</p>
@@ -57,7 +67,7 @@
 
                         <label class="block text-sm font-medium text-slate-700">
                             <span class="mb-2 block">Téléphone</span>
-                            <input name="telephone" value="{{ old('telephone') }}" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
+                            <input type="tel" inputmode="tel" name="telephone" value="{{ old('telephone') }}" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
                             @error('telephone')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
                         </label>
                     </div>

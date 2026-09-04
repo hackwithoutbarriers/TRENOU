@@ -115,7 +115,8 @@
             </div>
         </div>
 
-        <div class="mb-6 overflow-x-auto pb-2">
+        <div class="mb-6 overflow-x-auto pb-2" aria-label="Témoignages clients défilants">
+            <p class="mb-2 text-xs text-slate-500 sm:hidden">Faites glisser pour découvrir les témoignages.</p>
             <div class="flex min-w-max gap-4">
                 @foreach ($reviews as $review)
                     <article class="w-[320px] shrink-0 overflow-hidden rounded-[30px] border border-stone-200 bg-white shadow-[0_20px_40px_-28px_rgba(15,23,42,0.45)]">
@@ -175,12 +176,12 @@
                     @endif
 
                     <div class="p-5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div class="min-w-0">
                                 <h3 class="text-lg font-bold text-slate-900">{{ $review['author'] }}</h3>
                                 <div class="mt-1 text-sm text-slate-500">{{ $review['city'] }}</div>
                             </div>
-                            <div class="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">
+                            <div class="max-w-full break-words rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                                 {{ $review['sourceLabel'] ?? ucfirst($review['source'] ?? 'client') }}
                             </div>
                         </div>

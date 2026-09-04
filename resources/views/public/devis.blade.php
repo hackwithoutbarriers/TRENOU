@@ -12,8 +12,18 @@
         </div>
 
         @if (session('success'))
-            <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+            <div role="status" class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
                 {{ session('success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+                <p class="font-semibold">Vérifiez les informations saisies :</p>
+                <ul class="mt-2 list-disc space-y-1 pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
@@ -40,17 +50,18 @@
                 <div class="min-w-0">
                     <div id="step-panels" class="space-y-5"></div>
 
-                    <div class="mt-6 flex items-center justify-between gap-3 border-t border-stone-200 pt-5">
-                        <button type="button" id="previous-step" class="hidden text-sm font-medium text-slate-500 transition hover:text-slate-900">Retour</button>
-                        <div class="ml-auto flex items-center gap-3">
-                            <button type="button" id="next-step" class="inline-flex items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40">
+                    <div class="mt-6 grid grid-cols-1 gap-3 border-t border-stone-200 pt-5 sm:flex sm:items-center sm:justify-between">
+                        <button type="button" id="previous-step" class="hidden min-h-11 text-sm font-medium text-slate-500 transition hover:text-slate-900 sm:w-auto">Retour</button>
+                        <div class="flex flex-col gap-3 sm:ml-auto sm:flex-row">
+                            <button type="button" id="next-step" class="inline-flex min-h-11 items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto">
                                 Suivant
                             </button>
-                            <button type="submit" id="submit-quote" class="hidden inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700">
+                            <button type="submit" id="submit-quote" class="hidden inline-flex min-h-11 items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700 disabled:cursor-wait disabled:opacity-70 sm:w-auto">
                                 Envoyer ma demande
                             </button>
                         </div>
                     </div>
+                    <p id="quote-validation-message" role="alert" class="hidden mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></p>
                 </div>
 
                 <aside class="rounded-3xl border border-stone-200 bg-slate-900 p-5 text-white shadow-sm">

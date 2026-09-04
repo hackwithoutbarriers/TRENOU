@@ -9,7 +9,7 @@
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Contacter sur WhatsApp"
-    class="group fixed bottom-5 right-5 z-50 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] shadow-[0_10px_30px_rgba(37,211,102,0.35)] transition duration-200 hover:scale-105"
+    class="group fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] shadow-[0_10px_30px_rgba(37,211,102,0.35)] transition duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25D366]/40 sm:bottom-5 sm:right-5"
 >
     <span class="absolute inset-0 rounded-full bg-[#25D366]/30 animate-ping opacity-60"></span>
     <svg class="relative h-7 w-7 text-white" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">

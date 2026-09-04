@@ -138,6 +138,13 @@
 
     </style>
 </head>
+@php
+    $photoRelativePath = (string) $attestation->photo_profil;
+    $photoPath = preg_match('/\A[a-zA-Z0-9][a-zA-Z0-9\/_-]*\.(?:jpg|jpeg|png|webp)\z/i', $photoRelativePath)
+        ? public_path('storage/'.$photoRelativePath)
+        : null;
+    $photoPath = $photoPath !== null && is_file($photoPath) ? $photoPath : null;
+@endphp
 <body>
     @php
         $chiffresEnLettres = [
@@ -181,9 +188,9 @@
                     <table class="identity-grid">
                         <tr>
                             <td class="photo-cell">
-                                @if ($attestation->photo_profil)
+                                @if ($photoPath)
                                     <div class="photo-frame has-photo">
-                                        <img src="{{ public_path('storage/'.$attestation->photo_profil) }}" alt="Photo de l’apprenti">
+                                        <img src="{{ $photoPath }}" alt="Photo de l’apprenti">
                                     </div>
                                 @else
                                     <div class="photo-frame"><span>Photo de l’Apprenti</span></div>

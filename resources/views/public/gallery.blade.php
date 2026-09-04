@@ -41,11 +41,11 @@
                     </select>
                 </label>
 
-                <div class="flex items-end gap-2">
-                    <button type="submit" class="w-full rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-amber-400">
+                <div class="grid gap-2 sm:flex sm:items-end">
+                    <button type="submit" class="min-h-11 w-full rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-amber-400 sm:w-auto">
                         Filtrer
                     </button>
-                    <a href="{{ route('gallery') }}" class="inline-flex w-full items-center justify-center rounded-2xl border border-stone-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-stone-100">
+                    <a href="{{ route('gallery') }}" class="inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-stone-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-stone-100 sm:w-auto">
                         Réinitialiser
                     </a>
                 </div>
@@ -63,7 +63,7 @@
                     <article class="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
                         @if (!empty($projectImages))
                             @php $projectImageUrl = preg_match('/^https?:\/\//', $projectImages[0]) ? $projectImages[0] : Storage::disk('public')->url($projectImages[0]); @endphp
-                            <img src="{{ $projectImageUrl }}" alt="{{ $project->titre }}" loading="lazy" class="h-64 w-full object-cover" />
+                            <img src="{{ $projectImageUrl }}" alt="{{ $project->titre }}" loading="lazy" class="aspect-[4/3] h-auto w-full object-cover" />
                         @else
                             <div class="flex h-64 items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-sm font-semibold text-slate-700">
                                 {{ $project->titre }}

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (menuToggle && mobileMenu) {
         const setMenuState = (isOpen) => {
             menuToggle.setAttribute('aria-expanded', String(isOpen));
+            menuToggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
             menuToggle.classList.toggle('active', isOpen);
             mobileMenu.classList.toggle('hidden', !isOpen);
         };
@@ -17,6 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileMenu.querySelectorAll('a').forEach((link) => {
             link.addEventListener('click', () => setMenuState(false));
         });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+                setMenuState(false);
+                menuToggle.focus();
+            }
+        });
     }
 
     const quoteConfigBlock = document.getElementById('quote-config');
@@ -24,7 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const quotePayload = JSON.parse(quoteConfigBlock.textContent || '{}');
+    let quotePayload;
+
+    try {
+        quotePayload = JSON.parse(quoteConfigBlock.textContent || '{}');
+    } catch (error) {
+        quoteConfigBlock.insertAdjacentHTML(
+            'afterend',
+            '<p role="alert" class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Le configurateur est temporairement indisponible. Veuillez réessayer dans quelques instants.</p>',
+        );
+        return;
+    }
     const config = quotePayload.config ?? quotePayload;
     const oldValues = quotePayload.old ?? {};
     const form = document.getElementById('quote-configurator-form');
@@ -35,8 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitQuoteButton = document.getElementById('submit-quote');
     const estimateRange = document.getElementById('estimate-range');
     const estimateMeta = document.getElementById('estimate-meta');
+    const validationMessage = document.getElementById('quote-validation-message');
 
-    if (!form || !stepper || !panels || !previousStepButton || !nextStepButton || !submitQuoteButton || !estimateRange || !estimateMeta) {
+    if (!form || !stepper || !panels || !previousStepButton || !nextStepButton || !submitQuoteButton || !estimateRange || !estimateMeta || !validationMessage) {
         return;
     }
 
@@ -78,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatMoney = (value) => `${moneyFormatter.format(Math.round(value))} FCFA`;
 
     const parseFloatFromInput = (value) => {
-        const numeric = Number.parseFloat(value);
+        const numeric = Number.parseFloat(String(value).replace(',', '.'));
         return Number.isFinite(numeric) ? numeric : 0;
     };
 
@@ -270,8 +289,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateNavigationControls = () => {
-        nextStepButton.disabled = !canAdvance();
-        submitQuoteButton.disabled = !canAdvance();
+        nextStepButton.disabled = false;
+        submitQuoteButton.disabled = false;
+    };
+
+    const showValidationMessage = () => {
+        const messages = [
+            'Sélectionnez une catégorie de projet.',
+            'Sélectionnez un type de projet.',
+            'Saisissez des dimensions supérieures à zéro.',
+            '',
+            'Renseignez votre nom, votre téléphone, votre ville et votre pays.',
+        ];
+        validationMessage.textContent = messages[state.step];
+        validationMessage.classList.toggle('hidden', !messages[state.step]);
+
+        const firstField = state.step === 2
+            ? panels.querySelector('[data-dimension]')
+            : state.step === 4
+                ? panels.querySelector('input[name="nom"]')
+                : null;
+        firstField?.focus();
     };
 
     const renderStepper = () => {
@@ -301,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCategoryStep = () => {
         panels.innerHTML = `
             <section data-step-panel="0" class="rounded-3xl border border-stone-200 bg-stone-50 p-5">
-                <h2 class="text-xl font-black text-slate-900">Quel type de projet ?</h2>
+                <h2 tabindex="-1" class="text-xl font-black text-slate-900">Quel type de projet ?</h2>
                 <p class="mt-2 text-sm text-slate-600">Sélectionnez la catégorie qui correspond à votre besoin.</p>
                 <div class="mt-5 grid gap-3 sm:grid-cols-2">
                     ${config.categories.map((category) => `
@@ -329,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         panels.innerHTML = `
             <section data-step-panel="1" class="rounded-3xl border border-stone-200 bg-stone-50 p-5">
-                <h2 class="text-xl font-black text-slate-900">Précisez le type de projet</h2>
+                <h2 tabindex="-1" class="text-xl font-black text-slate-900">Précisez le type de projet</h2>
                 <p class="mt-2 text-sm text-slate-600">${config.categories.find((category) => category.id === state.categorie)?.label || 'Projet'} • Choisissez le produit souhaité.</p>
                 <div class="mt-5 grid gap-3 sm:grid-cols-2">
                     ${subtypeOptions.map((subtype) => `
@@ -356,22 +394,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         panels.innerHTML = `
             <section data-step-panel="2" class="rounded-3xl border border-stone-200 bg-stone-50 p-5">
-                <h2 class="text-xl font-black text-slate-900">Dimensions</h2>
+                <h2 tabindex="-1" class="text-xl font-black text-slate-900">Dimensions</h2>
                 <p class="mt-2 text-sm text-slate-600">${subtype ? subtype.label : 'Produit'} • Saisissez les dimensions du projet.</p>
-                <div class="mt-5 ${subtype?.unit === 'm²' ? 'flex flex-wrap gap-4' : 'max-w-md'}">
+                <div class="mt-5 ${subtype?.unit === 'm²' ? 'grid gap-4 sm:grid-cols-2' : 'max-w-md'}">
                     ${subtype?.unit === 'm²' ? `
-                        <label class="flex w-32 flex-col gap-2 text-sm font-medium text-slate-700">
+                        <label for="dimension-largeur" class="flex w-full flex-col gap-2 text-sm font-medium text-slate-700">
                             <span>Largeur (m)</span>
-                            <input type="number" min="0" step="0.1" data-dimension="largeur" value="${state.dimensions.largeur}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" />
+                            <input id="dimension-largeur" type="number" min="0" step="0.1" inputmode="decimal" data-dimension="largeur" value="${state.dimensions.largeur}" required class="w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" />
                         </label>
-                        <label class="flex w-32 flex-col gap-2 text-sm font-medium text-slate-700">
+                        <label for="dimension-hauteur" class="flex w-full flex-col gap-2 text-sm font-medium text-slate-700">
                             <span>Hauteur (m)</span>
-                            <input type="number" min="0" step="0.1" data-dimension="hauteur" value="${state.dimensions.hauteur}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" />
+                            <input id="dimension-hauteur" type="number" min="0" step="0.1" inputmode="decimal" data-dimension="hauteur" value="${state.dimensions.hauteur}" required class="w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" />
                         </label>
                     ` : `
-                        <label class="flex max-w-xs flex-col gap-2 text-sm font-medium text-slate-700">
+                        <label for="dimension-longueur" class="flex w-full max-w-xs flex-col gap-2 text-sm font-medium text-slate-700">
                             <span>Longueur (ml)</span>
-                            <input type="number" min="0" step="0.1" data-dimension="longueur" value="${state.dimensions.longueur}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" />
+                            <input id="dimension-longueur" type="number" min="0" step="0.1" inputmode="decimal" data-dimension="longueur" value="${state.dimensions.longueur}" required class="w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" />
                         </label>
                     `}
                 </div>
@@ -384,7 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const field = event.target.dataset.dimension;
                 state.dimensions[field] = event.target.value;
                 syncFormValues();
-                render();
+                updateEstimatePanel();
+                updateNavigationControls();
+                validationMessage.classList.add('hidden');
             });
         });
     };
@@ -394,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         panels.innerHTML = `
             <section data-step-panel="3" class="rounded-3xl border border-stone-200 bg-stone-50 p-5">
-                <h2 class="text-xl font-black text-slate-900">Finitions & options</h2>
+                <h2 tabindex="-1" class="text-xl font-black text-slate-900">Finitions & options</h2>
                 <p class="mt-2 text-sm text-slate-600">Affinez la fourchette selon vos préférences.</p>
 
                 <div class="mt-5">
@@ -472,24 +512,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderContactStep = () => {
         panels.innerHTML = `
             <section data-step-panel="4" class="rounded-3xl border border-stone-200 bg-stone-50 p-5">
-                <h2 class="text-xl font-black text-slate-900">Vos coordonnées</h2>
+                <h2 tabindex="-1" class="text-xl font-black text-slate-900">Vos coordonnées</h2>
                 <p class="mt-2 text-sm text-slate-600">Pour recevoir une réponse rapide et un devis détaillé.</p>
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
                         <span>Nom complet</span>
-                        <input type="text" name="nom" value="${state.nom}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Votre nom" />
+                        <input type="text" name="nom" value="${state.nom}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Votre nom" />
                     </label>
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700">
                         <span>Téléphone</span>
-                        <input type="tel" name="telephone" value="${state.telephone}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
+                        <input type="tel" name="telephone" value="${state.telephone}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
                     </label>
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700">
                         <span>Ville</span>
-                        <input type="text" name="ville" value="${state.ville}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Lomé" />
+                        <input type="text" name="ville" value="${state.ville}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Lomé" />
                     </label>
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
                         <span>Pays</span>
-                        <input type="text" name="pays" value="${state.pays}" class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Togo" />
+                        <input type="text" name="pays" value="${state.pays}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Togo" />
                     </label>
                 </div>
             </section>
@@ -524,6 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.pays = event.target.value || 'Togo';
                 syncFormValues();
                 updateNavigationControls();
+                validationMessage.classList.add('hidden');
             });
         });
     };
@@ -552,6 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateNavigationControls();
         previousStepButton.disabled = state.step === 0;
         nextStepButton.textContent = 'Suivant';
+        requestAnimationFrame(() => panels.querySelector('[data-step-panel] h2')?.focus());
     };
 
     previousStepButton.addEventListener('click', () => {
@@ -561,6 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nextStepButton.addEventListener('click', () => {
         if (!canAdvance()) {
+            showValidationMessage();
             return;
         }
 
@@ -571,6 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (event) => {
         if (!canAdvance()) {
             event.preventDefault();
+            showValidationMessage();
             return;
         }
 
@@ -582,6 +626,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         syncFormValues();
+        submitQuoteButton.disabled = true;
+        submitQuoteButton.setAttribute('aria-busy', 'true');
+        submitQuoteButton.textContent = 'Envoi en cours…';
     });
 
     render();

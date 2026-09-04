@@ -21,6 +21,11 @@
                     </ul>
                 </div>
             @endif
+            @if (session('success'))
+                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+                    {{ session('success') }}
+                </div>
+            @endif
 
             <form method="POST" action="{{ route('reviews.store') }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
@@ -62,7 +67,8 @@
                     </div>
                     <div>
                         <label for="photo_projet" class="mb-2 block text-sm font-medium text-slate-700">Photo du projet</label>
-                        <input id="photo_projet" name="photo_projet" type="file" accept="image/*" required class="block w-full rounded-2xl border border-stone-300 bg-white px-3 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-amber-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-amber-700 hover:file:bg-amber-200">
+                        <input id="photo_projet" name="photo_projet" type="file" accept="image/*" capture="environment" required class="block w-full rounded-2xl border border-stone-300 bg-white px-3 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-amber-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-amber-700 hover:file:bg-amber-200">
+                        <span class="mt-1 block text-xs text-slate-500">Choisissez une photo dans votre galerie ou prenez-la avec l’appareil photo.</span>
                     </div>
                 </div>
 

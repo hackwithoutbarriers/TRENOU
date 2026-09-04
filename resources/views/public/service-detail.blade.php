@@ -40,10 +40,10 @@
         </div>
 
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a href="{{ route('public.devis') }}" class="inline-flex items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-400">
+            <a href="{{ route('public.devis') }}" class="inline-flex min-h-11 items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-400">
                 Demander un devis
             </a>
-            <a href="{{ route('services') }}" class="inline-flex items-center justify-center rounded-full border border-stone-200 bg-stone-50 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-stone-100">
+            <a href="{{ route('services') }}" class="inline-flex min-h-11 items-center justify-center rounded-full border border-stone-200 bg-stone-50 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-stone-100">
                 Voir tous les services
             </a>
         </div>

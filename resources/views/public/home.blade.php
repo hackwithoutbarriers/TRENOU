@@ -4,7 +4,7 @@
 @section('meta_description', config('business.activities'))
 
 @section('content')
-    <section class="relative isolate overflow-hidden bg-slate-900 text-white">
+    <section class="relative isolate min-h-[560px] overflow-hidden bg-slate-900 text-white sm:min-h-[620px]">
         <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.38)), url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.42)), url('https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.35)), url('https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80');"></div>
@@ -117,14 +117,14 @@
                 <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-xl">🏗️</div>
                 <h3 class="text-xl font-bold text-slate-900">Bâtiment</h3>
                 <p class="mt-3 text-sm leading-6 text-slate-600">Portes, fenêtres, baies vitrées, garde-corps, murs-rideaux et façades aluminium pour maisons, villas, bureaux et établissements commerciaux.</p>
-                <a href="{{ route('services.detail', ['slug' => 'menuiserie-batiment']) }}" class="mt-5 inline-flex text-sm font-semibold text-amber-600">En savoir plus</a>
+                <a href="{{ route('services.detail', ['slug' => 'menuiserie-batiment']) }}" class="mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-amber-600">En savoir plus</a>
             </article>
 
             <article class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
                 <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-xl">🪑</div>
                 <h3 class="text-xl font-bold text-slate-900">Mobilier</h3>
                 <p class="mt-3 text-sm leading-6 text-slate-600">Cuisines intégrées, comptoirs de vente, tables hautes, armoires et rangements sur mesure pour des espaces fonctionnels et élégants.</p>
-                <a href="{{ route('services.detail', ['slug' => 'mobilier-sur-mesure']) }}" class="mt-5 inline-flex text-sm font-semibold text-amber-600">En savoir plus</a>
+                <a href="{{ route('services.detail', ['slug' => 'mobilier-sur-mesure']) }}" class="mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-amber-600">En savoir plus</a>
             </article>
         </div>
     </section>

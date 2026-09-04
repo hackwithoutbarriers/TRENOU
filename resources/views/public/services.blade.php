@@ -29,10 +29,10 @@
                     </ul>
 
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                        <a href="{{ route('services.detail', ['slug' => $category['slug']]) }}" class="inline-flex items-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700">
+                        <a href="{{ route('services.detail', ['slug' => $category['slug']]) }}" class="inline-flex min-h-11 items-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700">
                             Voir le service
                         </a>
-                        <a href="{{ route('public.devis') }}" class="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-stone-100">
+                        <a href="{{ route('public.devis') }}" class="inline-flex min-h-11 items-center rounded-full border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-stone-100">
                             Demander un devis
                         </a>
                     </div>
