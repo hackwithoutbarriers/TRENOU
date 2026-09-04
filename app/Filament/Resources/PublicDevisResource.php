@@ -25,52 +25,55 @@ class PublicDevisResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Demande de devis')->schema([
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('numero_demande')
-                            ->label('N° demande')
-                            ->readOnly()
-                            ->dehydrated(false),
-                        Forms\Components\Select::make('statut')
-                            ->label('Statut')
-                            ->options([
-                                'nouvelle' => 'Nouvelle',
-                                'en_cours' => 'En cours',
-                                'convertie' => 'Convertie',
-                            ])
-                            ->default('nouvelle')
-                            ->required(),
-                    ]),
+                Section::make('Demande de devis')
+                    ->description('Consultez les coordonnées, le besoin et le statut de la demande.')
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('numero_demande')
+                                ->label('N° demande')
+                                ->readOnly()
+                                ->dehydrated(false),
+                            Forms\Components\Select::make('statut')
+                                ->label('Statut')
+                                ->options([
+                                    'nouvelle' => 'Nouvelle',
+                                    'en_cours' => 'En cours',
+                                    'convertie' => 'Convertie',
+                                ])
+                                ->default('nouvelle')
+                                ->required(),
+                        ]),
 
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('nom')
-                            ->label('Nom')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('telephone')
-                            ->label('Téléphone')
-                            ->tel()
-                            ->required()
-                            ->maxLength(30),
-                    ]),
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('nom')
+                                ->label('Nom')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('telephone')
+                                ->label('Téléphone')
+                                ->tel()
+                                ->required()
+                                ->maxLength(30),
+                        ]),
 
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('ville')
-                            ->label('Ville')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('pays')
-                            ->label('Pays')
-                            ->default('Togo')
-                            ->required()
-                            ->maxLength(255),
-                    ]),
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('ville')
+                                ->label('Ville')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('pays')
+                                ->label('Pays')
+                                ->default('Togo')
+                                ->required()
+                                ->maxLength(255),
+                        ]),
 
-                    Forms\Components\Textarea::make('description_besoin')
-                        ->label('Description du besoin')
-                        ->required()
-                        ->rows(5)
-                        ->columnSpanFull(),
-                ]),
+                        Forms\Components\Textarea::make('description_besoin')
+                            ->label('Description du besoin')
+                            ->required()
+                            ->rows(5)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -88,17 +91,21 @@ class PublicDevisResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('telephone')
                     ->label('Téléphone')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('ville')
                     ->label('Ville')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('pays')
                     ->label('Pays')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('sous_type')
                     ->label('Projet')
                     ->placeholder('—')
-                    ->formatStateUsing(fn (?string $state): string => $state ? str_replace('-', ' ', ucfirst($state)) : '—'),
+                    ->formatStateUsing(fn (?string $state): string => $state ? str_replace('-', ' ', ucfirst($state)) : '—')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('estimation_min')
                     ->label('Estimation')
                     ->placeholder('—')
