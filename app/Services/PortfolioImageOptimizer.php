@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use InvalidArgumentException;
@@ -19,6 +20,7 @@ class PortfolioImageOptimizer
         $optimized = [];
         $disk = Storage::disk('public');
         $imageManager = ImageManager::gd();
+        $canEncodeWebp = function_exists('imagewebp');
 
         foreach ($paths as $path) {
             if (blank($path)) {
@@ -43,6 +45,15 @@ class PortfolioImageOptimizer
             $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 
             if ($extension === 'webp') {
+                $optimized[] = $path;
+
+                continue;
+            }
+
+            if (! $canEncodeWebp) {
+                Log::warning('WebP encoding is unavailable; keeping the original portfolio image.', [
+                    'path' => $path,
+                ]);
                 $optimized[] = $path;
 
                 continue;
