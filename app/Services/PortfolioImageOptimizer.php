@@ -18,7 +18,8 @@ class PortfolioImageOptimizer
     public function optimize(array $paths): array
     {
         $optimized = [];
-        $disk = Storage::disk('public');
+        $diskName = (string) config('filesystems.default', 'public');
+        $disk = Storage::disk($diskName);
         $imageManager = ImageManager::gd();
         $canEncodeWebp = function_exists('imagewebp');
 
@@ -28,15 +29,11 @@ class PortfolioImageOptimizer
             }
 
             $this->ensureSafeRelativePath($path);
-            $absolutePath = $disk->path($path);
-            $storageRoot = realpath($disk->path(''));
-            $resolvedPath = realpath($absolutePath);
-
-            if ($storageRoot === false || ($resolvedPath !== false && ! $this->isWithinRoot($resolvedPath, $storageRoot))) {
+            if (! $this->isSafeStoredPath($path)) {
                 throw new InvalidArgumentException('The portfolio image path is outside the public storage disk.');
             }
 
-            if (! file_exists($absolutePath)) {
+            if (! $disk->exists($path)) {
                 $optimized[] = $path;
 
                 continue;
@@ -59,18 +56,29 @@ class PortfolioImageOptimizer
                 continue;
             }
 
-            $webpPath = preg_replace('/\.[^.]+$/', '.webp', $path);
-            $webpAbsolutePath = $disk->path($webpPath);
+            $sourcePath = tempnam(sys_get_temp_dir(), 'portfolio-source-');
+            $webpAbsolutePath = tempnam(sys_get_temp_dir(), 'portfolio-webp-');
 
-            $imageManager->read($absolutePath)
+            if ($sourcePath === false || $webpAbsolutePath === false) {
+                throw new \RuntimeException('Impossible de créer les fichiers temporaires pour optimiser l’image.');
+            }
+
+            file_put_contents($sourcePath, $disk->get($path));
+            $webpPath = preg_replace('/\.[^.]+$/', '.webp', $path);
+
+            $imageManager->read($sourcePath)
                 ->resizeDown(1600, 1200)
                 ->toWebp(72)
                 ->save($webpAbsolutePath);
 
-            if ($path !== $webpPath && file_exists($absolutePath)) {
-                unlink($absolutePath);
+            $disk->put($webpPath, file_get_contents($webpAbsolutePath));
+
+            if ($path !== $webpPath) {
+                $disk->delete($path);
             }
 
+            unlink($sourcePath);
+            unlink($webpAbsolutePath);
             $optimized[] = $webpPath;
         }
 
@@ -84,8 +92,10 @@ class PortfolioImageOptimizer
         }
     }
 
-    private function isWithinRoot(string $path, string $root): bool
+    private function isSafeStoredPath(string $path): bool
     {
-        return $path === $root || str_starts_with($path, $root.DIRECTORY_SEPARATOR);
+        return ! str_starts_with($path, '/')
+            && ! str_starts_with($path, '\\')
+            && ! preg_match('/\A[A-Za-z]:[\\\\\/]/', $path);
     }
 }
