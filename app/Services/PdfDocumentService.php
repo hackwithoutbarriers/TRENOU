@@ -55,12 +55,12 @@ class PdfDocumentService
                 $browserShot->noSandbox();
             }
 
-            $chromiumArgs = array_map(
-                fn (string $argument): string => ltrim($argument, '-'),
-                (array) config('browsershot.chromium_args', [])
+            $chromiumArguments = array_map(
+                static fn (string $argument): string => ltrim($argument, '-'),
+                (array) config('browsershot.chromium_args', []),
             );
-            if ($chromiumArgs !== []) {
-                $browserShot->addChromiumArguments($chromiumArgs);
+            if ($chromiumArguments !== []) {
+                $browserShot->addChromiumArguments($chromiumArguments);
             }
 
             $browserShot->save($targetPath);
