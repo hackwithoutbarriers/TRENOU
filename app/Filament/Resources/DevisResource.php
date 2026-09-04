@@ -24,130 +24,140 @@ class DevisResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Client')->schema([
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('client_nom')
-                            ->label('Nom du client')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('client_telephone')
-                            ->label('Téléphone')
-                            ->tel()
-                            ->required()
-                            ->maxLength(255),
-                    ]),
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('client_ville')
-                            ->label('Ville du client')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('client_pays')
-                            ->label('Pays du client')
-                            ->default('Togo')
-                            ->required()
-                            ->maxLength(255),
-                    ]),
-                ]),
-
-                Section::make('Devis')->schema([
-                    Forms\Components\TextInput::make('numero_devis')
-                        ->label('Numéro du devis')
-                        ->readOnly()
-                        ->dehydrated(false)
-                        ->visibleOn('edit'),
-
-                    Forms\Components\Textarea::make('description_chantier')
-                        ->label('Description du chantier')
-                        ->required()
-                        ->rows(7)
-                        ->columnSpanFull(),
-
-                    Forms\Components\Repeater::make('lignes_facturation')
-                        ->label('Lignes de facturation')
-                        ->schema([
-                            Forms\Components\TextInput::make('designation')
-                                ->label('Titre de la prestation')
-                                ->required(),
-                            Forms\Components\Textarea::make('description')
-                                ->label('Description / mesures')
-                                ->rows(2)
-                                ->placeholder('Ex. L 1,20 m x H 2,10 m, vitrage double...')
-                                ->columnSpan(2),
-                            Forms\Components\TextInput::make('quantite')
-                                ->label('Quantité')
-                                ->numeric()
+                Section::make('Client')
+                    ->description('Coordonnées du client et localisation du chantier.')
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('client_nom')
+                                ->label('Nom du client')
                                 ->required()
-                                ->default(1)
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateLineTotals($get, $set)),
-                            Forms\Components\TextInput::make('prix_unitaire')
-                                ->label('Prix unitaire')
-                                ->numeric()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('client_telephone')
+                                ->label('Téléphone')
+                                ->tel()
                                 ->required()
-                                ->prefix('FCFA ')
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateLineTotals($get, $set)),
-                            Forms\Components\TextInput::make('total')
-                                ->label('Total')
+                                ->maxLength(255),
+                        ]),
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('client_ville')
+                                ->label('Ville du client')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('client_pays')
+                                ->label('Pays du client')
+                                ->default('Togo')
+                                ->required()
+                                ->maxLength(255),
+                        ]),
+                    ]),
+
+                Section::make('Devis')
+                    ->description('Détaillez les prestations, les montants et les conditions commerciales.')
+                    ->columns(1)
+                    ->schema([
+                        Forms\Components\TextInput::make('numero_devis')
+                            ->label('Numéro du devis')
+                            ->readOnly()
+                            ->dehydrated(false)
+                            ->visibleOn('edit'),
+
+                        Forms\Components\Textarea::make('description_chantier')
+                            ->label('Description du chantier')
+                            ->required()
+                            ->rows(5)
+                            ->columnSpanFull(),
+
+                        Forms\Components\Repeater::make('lignes_facturation')
+                            ->label('Lignes de facturation')
+                            ->itemLabel(fn (array $state): ?string => filled($state['designation'] ?? null)
+                                ? (string) $state['designation']
+                                : 'Nouvelle prestation')
+                            ->addActionLabel('Ajouter une prestation')
+                            ->schema([
+                                Forms\Components\TextInput::make('designation')
+                                    ->label('Titre de la prestation')
+                                    ->required(),
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Description / mesures')
+                                    ->rows(2)
+                                    ->placeholder('Ex. L 1,20 m x H 2,10 m, vitrage double...')
+                                    ->columnSpan(['default' => 1, 'sm' => 2, 'xl' => 2]),
+                                Forms\Components\TextInput::make('quantite')
+                                    ->label('Quantité')
+                                    ->numeric()
+                                    ->required()
+                                    ->default(1)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateLineTotals($get, $set)),
+                                Forms\Components\TextInput::make('prix_unitaire')
+                                    ->label('Prix unitaire')
+                                    ->numeric()
+                                    ->required()
+                                    ->prefix('FCFA ')
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateLineTotals($get, $set)),
+                                Forms\Components\TextInput::make('total')
+                                    ->label('Total')
+                                    ->numeric()
+                                    ->prefix('FCFA ')
+                                    ->disabled()
+                                    ->dehydrated()
+                                    ->formatStateUsing(fn ($state, Forms\Get $get): float => (float) ($get('quantite') ?? 0) * (float) ($get('prix_unitaire') ?? 0)),
+                            ])
+                            ->columns(['default' => 1, 'sm' => 2, 'xl' => 5])
+                            ->defaultItems(1)
+                            ->live()
+                            ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set))
+                            ->columnSpanFull(),
+
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('total_prestations')
+                                ->label('Total prestations')
                                 ->numeric()
                                 ->prefix('FCFA ')
                                 ->disabled()
-                                ->dehydrated()
-                                ->formatStateUsing(fn ($state, Forms\Get $get): float => (float) ($get('quantite') ?? 0) * (float) ($get('prix_unitaire') ?? 0)),
-                        ])
-                        ->columns(['default' => 1, 'lg' => 5])
-                        ->defaultItems(1)
-                        ->live()
-                        ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set))
-                        ->columnSpanFull(),
+                                ->dehydrated(false),
+                            Forms\Components\TextInput::make('montant_main_doeuvre')
+                                ->label('Main-d’œuvre')
+                                ->required()
+                                ->numeric()
+                                ->prefix('FCFA ')
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set)),
+                        ]),
 
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('total_prestations')
-                            ->label('Total prestations')
+                        Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
+                            Forms\Components\TextInput::make('acompte_requis_pourcentage')
+                                ->label('Acompte requis (%)')
+                                ->numeric()
+                                ->default(0)
+                                ->minValue(0)
+                                ->maxValue(100),
+                            Forms\Components\Select::make('statut')
+                                ->label('Statut')
+                                ->options([
+                                    'brouillon' => 'Brouillon',
+                                    'envoye' => 'Envoyé',
+                                    'accepte' => 'Accepté',
+                                    'livre' => 'Livré',
+                                    'refuse' => 'Refusé',
+                                ])
+                                ->default('brouillon')
+                                ->required(),
+                        ]),
+
+                        Forms\Components\TextInput::make('montant_total')
+                            ->label('Total HT')
                             ->numeric()
                             ->prefix('FCFA ')
                             ->disabled()
-                            ->dehydrated(false),
-                        Forms\Components\TextInput::make('montant_main_doeuvre')
-                            ->label('Main-d’œuvre')
-                            ->required()
-                            ->numeric()
-                            ->prefix('FCFA ')
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set)),
+                            ->dehydrated(false)
+                            ->formatStateUsing(function ($state, $record) {
+                                $value = $state ?? (($record?->montant_materiel ?? 0) + ($record?->montant_main_doeuvre ?? 0));
+
+                                return (float) $value;
+                            }),
                     ]),
-
-                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
-                        Forms\Components\TextInput::make('acompte_requis_pourcentage')
-                            ->label('Acompte requis (%)')
-                            ->numeric()
-                            ->default(0)
-                            ->minValue(0)
-                            ->maxValue(100),
-                        Forms\Components\Select::make('statut')
-                            ->label('Statut')
-                            ->options([
-                                'brouillon' => 'Brouillon',
-                                'envoye' => 'Envoyé',
-                                'accepte' => 'Accepté',
-                                'livre' => 'Livré',
-                                'refuse' => 'Refusé',
-                            ])
-                            ->default('brouillon')
-                            ->required(),
-                    ]),
-
-                    Forms\Components\TextInput::make('montant_total')
-                        ->label('Total HT')
-                        ->numeric()
-                        ->prefix('FCFA ')
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->formatStateUsing(function ($state, $record) {
-                            $value = $state ?? (($record?->montant_materiel ?? 0) + ($record?->montant_main_doeuvre ?? 0));
-
-                            return (float) $value;
-                        }),
-                ]),
             ]);
     }
 
@@ -189,10 +199,12 @@ class DevisResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('client_telephone')
                     ->label('Téléphone')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('client_ville')
                     ->label('Ville')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('montant_total')
                     ->label('Total HT')
                     ->money('XOF')
@@ -200,7 +212,8 @@ class DevisResource extends Resource
                 Tables\Columns\TextColumn::make('acompte_requis_pourcentage')
                     ->label('Acompte')
                     ->suffix('%')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('statut')
                     ->label('Statut')
                     ->searchable()
