@@ -8,8 +8,21 @@ COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
 RUN npm run build
+# Install Puppeteer's Node package for Browsershot (PDF generation of
+# attestations). This runs on a Debian image so the resulting node_modules
+# is ABI-compatible with the final php:8.4-apache-bookworm stage below —
+# the "frontend" stage above is Alpine (musl) and its node_modules cannot be
+# reused here. PUPPETEER_SKIP_DOWNLOAD skips Puppeteer's own Chromium
+# download: we use Debian's "chromium" package instead (installed in the
+# final stage), which already has all of its runtime shared libraries
+# resolved by apt, instead of hand-listing ~20 libs Chromium needs.
+FROM node:22-bookworm-slim AS browsershot
+WORKDIR /app
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 # Install production PHP dependencies with the extensions required by the lockfile.
-FROM php:8.4-cli AS vendor
+FROM php:8.4-cli-bookworm AS vendor
 WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -62,7 +75,7 @@ RUN composer dump-autoload \
         --no-scripts \
     && php -r "require 'vendor/autoload.php';"
 # Production Laravel image.
-FROM php:8.4-apache
+FROM php:8.4-apache-bookworm
 WORKDIR /var/www/html
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -78,7 +91,24 @@ RUN apt-get update \
         libxml2-dev \
         libzip-dev \
         unzip \
+        nodejs \
+        npm \
+        chromium \
+        fonts-liberation \
+        fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
+# Runtime config for Spatie Browsershot (attestation PDFs): use the Node.js
+# and Chromium installed above instead of Browsershot's defaults, which
+# assume a `node` binary and a Puppeteer-bundled Chromium are on PATH.
+# These are real environment variables, not just ".env" values, so they
+# apply even before Laravel's config is cached; a value set in Render's
+# dashboard for the same key overrides these.
+ENV BROWSERSHOT_NODE_BINARY=/usr/bin/node \
+    BROWSERSHOT_NPM_BINARY=/usr/bin/npm \
+    BROWSERSHOT_NODE_MODULE_PATH=/var/www/html/node_modules \
+    BROWSERSHOT_CHROME_PATH=/usr/bin/chromium \
+    BROWSERSHOT_NO_SANDBOX=true \
+    BROWSERSHOT_CHROMIUM_ARGS=--disable-dev-shm-usage
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath curl exif gd intl mbstring opcache pcntl pdo_pgsql pdo_mysql pdo_sqlite xml zip
@@ -103,6 +133,7 @@ RUN a2enmod rewrite \
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+COPY --from=browsershot /app/node_modules ./node_modules
 RUN test -f public/index.php
 RUN mkdir -p \
         database \
