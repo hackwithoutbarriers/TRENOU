@@ -11,6 +11,8 @@ class PdfDocumentService
 {
     public function downloadView(string $view, array $data, string $filename, string $paper = 'a4', string $orientation = 'portrait'): Response
     {
+        set_time_limit((int) config('browsershot.php_execution_timeout', 0));
+
         $temporaryBasePath = tempnam(storage_path('app'), 'pdf-');
 
         if ($temporaryBasePath === false) {
