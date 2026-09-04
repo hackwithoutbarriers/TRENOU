@@ -7,143 +7,206 @@
         @page { size: A4 landscape; margin: 0; }
         * { box-sizing: border-box; }
         html, body { width: 297mm; height: 210mm; margin: 0; }
+
         @font-face { font-family: 'Roboto'; src: url('{{ public_path('fonts/roboto/Roboto-Regular.ttf') }}') format('truetype'); font-weight: 400; }
         @font-face { font-family: 'Roboto'; src: url('{{ public_path('fonts/roboto/Roboto-Medium.ttf') }}') format('truetype'); font-weight: 500; }
         @font-face { font-family: 'Roboto'; src: url('{{ public_path('fonts/roboto/Roboto-Bold.ttf') }}') format('truetype'); font-weight: 700; }
         @font-face { font-family: 'Helvetica'; src: local('Arial'); }
-        body { color: #16305c; font-family: 'Roboto', Arial, sans-serif; font-size: 14pt; background: #c9c9c9; }
 
-        /* ===== Cadre extérieur ===== */
+        body {
+            margin: 0;
+            color: #1A202C;
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 11pt;
+            background: #e9e6df;
+        }
+
+        /* ===== Feuille & cadre d'honneur ===== */
         .certificate {
             position: relative;
             width: 297mm;
             height: 210mm;
-            padding: 6mm;
-            background: #f7f7f5;
+            padding: 7mm;
+            background: #fdfcf8;
         }
 
-        .border-frame {
+        .frame-outer {
             position: relative;
             height: 100%;
-            border: 5px double #16305c;
-            padding: 4mm;
+            border: 2.5px solid #104482;
+            padding: 2.5mm;
         }
 
-        .border-inner {
+        .frame-inner {
             position: relative;
             display: flex;
             flex-direction: column;
             height: 100%;
-            border: 1px solid #8b96a3;
-            padding: 5mm 12mm 6mm;
+            border: 1px solid #104482;
+            padding: 7mm 16mm 9mm;
+            overflow: hidden;
         }
 
-        /* ===== Coins décoratifs (sans SVG, compatible dompdf) ===== */
-        .corner { position: absolute; width: 34px; height: 34px; z-index: 2; }
-        .corner .c1 { position:absolute; top:0; left:0; width:100%; height:100%; border-top:4px solid #16305c; border-left:4px solid #16305c; }
-        .corner .c2 { position:absolute; top:7px; left:7px; width:100%; height:100%; border-top:2px solid #b9c2cc; border-left:2px solid #b9c2cc; }
-        .corner.tl { top: -5px; left: -5px; }
-        .corner.tr { top: -5px; right: -5px; transform: scaleX(-1); }
-        .corner.bl { bottom: -5px; left: -5px; transform: scaleY(-1); }
-        .corner.br { bottom: -5px; right: -5px; transform: scale(-1,-1); }
+        /* Coins ornementaux — CSS pur, sans SVG, compatible dompdf */
+        .corner { position: absolute; width: 30px; height: 30px; z-index: 2; }
+        .corner .c1 { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-top: 3px solid #104482; border-left: 3px solid #104482; }
+        .corner .c2 { position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; border-top: 1px solid #9fb3cf; border-left: 1px solid #9fb3cf; }
+        .corner.tl { top: -1px; left: -1px; }
+        .corner.tr { top: -1px; right: -1px; transform: scaleX(-1); }
+        .corner.bl { bottom: -1px; left: -1px; transform: scaleY(-1); }
+        .corner.br { bottom: -1px; right: -1px; transform: scale(-1, -1); }
 
-        .watermark { position: absolute; top: 50%; left: 50%; width: 82mm; opacity: .07; transform: translate(-50%, -50%); z-index: 0; }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90mm;
+            opacity: .05;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .cert-number {
+            position: absolute;
+            top: 7mm;
+            right: 12mm;
+            z-index: 3;
+            padding: 1.5mm 4mm;
+            border: 1px solid #104482;
+            background: rgba(255, 255, 255, .65);
+            color: #4A5568;
+            font-size: 8.5pt;
+            letter-spacing: .5px;
+        }
 
         /* ===== En-tête ===== */
         .header { position: relative; z-index: 1; text-align: center; }
-        .logo-frame { width: 92px; height: 64px; margin: 0 auto 2mm; text-align: center; line-height: 64px; }
-        .logo-frame img { width: auto; height: auto; max-width: 92px; max-height: 64px; object-fit: contain; vertical-align: middle; }
-        .company { text-align: center; }
-        .company .name { font-family: 'Helvetica', Arial, sans-serif; font-size: 18pt; font-weight: bold; color: #16305c; letter-spacing: .5px; line-height: 1.1; }
-        .company small { display: block; font-size: 11pt; font-weight: normal; color: #222; margin-top: 2mm; line-height: 1.25; }
+        .logo-frame { height: 60px; margin: 0 auto 2mm; text-align: center; line-height: 60px; }
+        .logo-frame img { width: auto; height: auto; max-width: 90px; max-height: 60px; object-fit: contain; vertical-align: middle; }
 
-        .sep { border: none; border-top: 1.5px solid #16305c; margin: 3mm 0 2mm; }
-        .contact { font-size: 14pt; color: #111; line-height: 1.2; }
+        .company .name { font-family: 'Helvetica', Arial, sans-serif; font-size: 17pt; font-weight: 700; color: #104482; letter-spacing: 1.5px; line-height: 1.1; text-transform: uppercase; }
+        .company small { display: block; font-size: 10pt; font-style: italic; font-weight: normal; color: #4A5568; margin-top: 1.5mm; line-height: 1.25; }
 
-        h1 { margin: 4mm 0 2mm; font-family: 'Helvetica', Arial, sans-serif; font-size: 24pt; letter-spacing: 1px; color: #111; }
-        .subtitle { font-size: 12pt; font-weight: bold; color: #333; }
-        .number { margin: 3mm auto 0; width: 48mm; padding: 2mm; border: 1px solid #16305c; font-size: 11pt; }
+        .ornament-divider { position: relative; margin: 3mm auto 2mm; width: 60%; }
+        .ornament-divider hr { border: none; border-top: 1px solid #104482; margin: 0; }
+        .ornament-divider .diamond { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #104482; transform: translate(-50%, -50%) rotate(45deg); }
+
+        .contact { font-size: 9.5pt; color: #4A5568; line-height: 1.2; }
+
+        h1 {
+            margin: 4mm 0 1.5mm;
+            font-family: 'Helvetica', Georgia, 'Times New Roman', serif;
+            font-size: 25pt;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            color: #104482;
+            text-transform: uppercase;
+        }
+        .subtitle { font-size: 10.5pt; font-style: italic; color: #6B7280; }
 
         /* ===== Corps ===== */
-        .content { position: absolute; z-index: 1; top: 54mm; right: 0; bottom: 32mm; left: 0; display: flex; align-items: center; justify-content: center; margin: 0; line-height: 1.55; }
+        .content {
+            position: absolute;
+            z-index: 1;
+            top: 58mm;
+            right: 0;
+            bottom: 35mm;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
 
         .identity-grid { width: 100%; margin: 0 auto; border-collapse: collapse; }
-        .identity-grid > tbody > tr > td { padding: 4mm 6mm; vertical-align: middle; }
+        .identity-grid > tbody > tr > td { padding: 0 6mm; vertical-align: middle; }
 
-        .photo-cell { width: 23%; text-align: center; }
+        .photo-cell { width: 22%; text-align: center; }
         .photo-frame {
-            display: flex; width: 35mm; height: 35mm; margin: 0 auto 3mm; align-items: center; justify-content: center;
-            border: 2px dashed #8b96a3; text-align: center; font-size: 10pt; color: #8a8a8a;
+            display: flex; width: 32mm; height: 32mm; margin: 0 auto 2.5mm; align-items: center; justify-content: center;
+            border: 1.5px dashed #9fb3cf; text-align: center; font-size: 9pt; color: #8a8a8a; background: #fff;
         }
-        .photo-frame.has-photo { border: 1px solid #16305c; }
-        .photo-frame img { display: block; width: 100%; height: 100%; object-fit: contain; background: #f1f3f5; }
+        .photo-frame.has-photo { border: 1.5px solid #104482; padding: 1.5mm; }
+        .photo-frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
         .photo-frame span { display: block; }
-        .photo-caption { font-size: 10pt; }
-        .photo-caption strong { display: block; margin-top: 2px; }
+        .photo-caption { font-size: 9pt; color: #4A5568; }
+        .photo-caption strong { display: block; margin-top: 1mm; color: #1A202C; }
 
-        .identity-grid td {
-            font-size: 10.5pt;
-            line-height: 1.8;
-        }
-        .identity-grid td > div + div {
-            margin-top: 2.5mm;
-        }
-        .lead { margin: 2mm 0 1.5mm; font-size: 15pt; font-weight: bold; text-transform: uppercase; }
-        .award { margin: 2mm 0; text-align: left; font-size: 12pt; font-weight: bold; }
+        .cert-text { font-size: 11pt; line-height: 1.85; text-align: left; }
+        .cert-text p { margin: 0 0 2.5mm; }
 
-        .details { width: 100%; margin: 3mm 0 0; border-collapse: collapse; }
-        .details td { padding: 1.5mm 0; border-bottom: 1px solid #b9c8d5; font-size: 10pt; }
-        .details .label { width: 22%; color: #333; }
-        .details .value { font-weight: bold; }
+        .apprentice-name {
+            position: relative;
+            margin: 3mm 0;
+            text-align: center;
+            font-family: 'Helvetica', Georgia, 'Times New Roman', serif;
+            font-size: 19pt;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #104482;
+            text-transform: uppercase;
+        }
+
+        .specialty-wrap { text-align: center; }
+        .specialty-badge {
+            display: inline-block;
+            margin: 1.5mm 0 2.5mm;
+            padding: 1.5mm 6mm;
+            border-top: 1px solid #104482;
+            border-bottom: 1px solid #104482;
+            font-size: 11pt;
+            font-weight: 700;
+            color: #4A5568;
+            text-align: center;
+        }
+
+        .closing { margin-top: 2mm; font-size: 10.5pt; color: #4A5568; text-align: center; font-style: italic; }
 
         /* ===== Pied de page ===== */
-        .footer { position: absolute; z-index: 1; right: 0; bottom: 0; left: 0; padding-top: 4mm; border-top: 1px solid #16305c; }
-        .footer-table { width: 100%; border-collapse: collapse; }
-        .footer-table td { vertical-align: bottom; font-size: 11pt; }
-
-        .date-cell {
+        .footer {
             position: absolute;
-            right: 0;
-            bottom: 5mm;
+            z-index: 1;
             left: 0;
-            z-index: 2;
-            width: 100%;
-            text-align: center;
-            vertical-align: middle;
-            transform: translateY(-3mm);
+            right: 0;
+            bottom: 0;
+            padding-top: 4mm;
+            border-top: 1px solid #104482;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
         }
 
-        .stamp-cell {
-            width: 22%;
-            padding-bottom: 2mm;
-            padding-right: 2mm;
-            text-align: right;
-            vertical-align: middle;
-            transform: translateX(22mm);
-        }
+        .footer-col { font-size: 10pt; }
+        .footer-date { width: 30%; color: #1A202C; }
+        .footer-date strong { color: #104482; }
+
+        .footer-stamp { width: 26%; text-align: center; }
         .stamp {
-            display: inline-block; width: 25mm; height: 25mm; line-height: 25mm;
-            text-align: center; font-size: 9pt; color: #8a8a8a;
+            display: inline-block; width: 24mm; height: 24mm; line-height: 24mm;
+            text-align: center; font-size: 8.5pt; color: #8a8a8a; border: 1px dashed #b9c2cc; border-radius: 50%;
         }
-        .stamp.has-stamp { line-height: normal; }
-        .stamp img { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; vertical-align: middle; }
+        .stamp.has-stamp { line-height: normal; border: none; }
+        .stamp img { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .director-cell { width: 37%; text-align: center; }
-        .director-title { font-weight: bold; margin-bottom: 2mm; }
-        .signature-space { height: 12mm; }
-        .signature-img { display: block; width: 28mm; height: 10mm; margin: 0 auto; object-fit: contain; }
-        .signature-line { width: 34mm; height: 1px; margin: 0 auto; border-bottom: 1px solid #16305c; }
-        .director-name { font-weight: bold; margin-top: -3mm; transform: translateY(-2mm); }
-        .director-meta { font-size: 9pt; color: #333; margin-top: 2mm; line-height: 1.4; }
-
+        .footer-signature { width: 34%; text-align: center; }
+        .director-title { font-weight: 700; color: #104482; margin-bottom: 1.5mm; font-size: 10pt; }
+        .signature-space { height: 11mm; display: flex; align-items: flex-end; justify-content: center; }
+        .signature-img { display: block; max-width: 28mm; max-height: 11mm; object-fit: contain; margin: 0 auto; }
+        .signature-line { width: 32mm; height: 1px; margin: 0 auto; border-bottom: 1px solid #104482; }
+        .director-name { font-weight: 700; margin-top: 1.5mm; color: #1A202C; font-size: 10pt; }
     </style>
 </head>
 @php
     $photoRelativePath = (string) $attestation->photo_profil;
-    $photoPath = preg_match('/\A[a-zA-Z0-9][a-zA-Z0-9\/_-]*\.(?:jpg|jpeg|png|webp)\z/i', $photoRelativePath)
-        ? public_path('storage/'.$photoRelativePath)
-        : null;
-    $photoPath = $photoPath !== null && is_file($photoPath) ? $photoPath : null;
+    $photoDataUri = null;
+    if (preg_match('/\A[a-zA-Z0-9][a-zA-Z0-9\/_-]*\.(?:jpg|jpeg|png|webp)\z/i', $photoRelativePath)) {
+        $photoDisk = Storage::disk(config('filesystems.default'));
+        if ($photoDisk->exists($photoRelativePath)) {
+            $photoContents = $photoDisk->get($photoRelativePath);
+            $photoMimeType = $photoDisk->mimeType($photoRelativePath) ?: 'application/octet-stream';
+            $photoDataUri = 'data:'.$photoMimeType.';base64,'.base64_encode($photoContents);
+        }
+    }
 @endphp
 <body>
     @php
@@ -162,14 +225,16 @@
     @endphp
 
     <div class="certificate">
-        <div class="border-frame">
-            <div class="corner tl"><div class="c1"></div><div class="c2"></div></div>
-            <div class="corner tr"><div class="c1"></div><div class="c2"></div></div>
-            <div class="corner bl"><div class="c1"></div><div class="c2"></div></div>
-            <div class="corner br"><div class="c1"></div><div class="c2"></div></div>
+        <div class="frame-outer">
+            <div class="frame-inner">
+                <div class="corner tl"><div class="c1"></div><div class="c2"></div></div>
+                <div class="corner tr"><div class="c1"></div><div class="c2"></div></div>
+                <div class="corner bl"><div class="c1"></div><div class="c2"></div></div>
+                <div class="corner br"><div class="c1"></div><div class="c2"></div></div>
 
-            <div class="border-inner">
                 <img class="watermark" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="">
+
+                <div class="cert-number">N&deg; {{ $attestation->numero_attestation }}</div>
 
                 <div class="header">
                     <div class="logo-frame">
@@ -179,73 +244,76 @@
                         <div class="name">{{ config('business.name') }}</div>
                         <small>{{ config('business.activities') }}</small>
                     </div>
-                    <hr class="sep">
+                    <div class="ornament-divider"><hr><div class="diamond"></div></div>
                     <div class="contact">{{ config('business.address') }} — Tél. : {{ config('business.phone') }} — {{ config('business.email') }}</div>
-                    <h1>CERTIFICAT DE FIN D’APPRENTISSAGE</h1>
+
+                    <h1>Certificat de fin d’apprentissage</h1>
+                    <div class="subtitle">Décerné en reconnaissance d’une formation professionnelle accomplie avec succès</div>
                 </div>
 
                 <div class="content">
                     <table class="identity-grid">
                         <tr>
                             <td class="photo-cell">
-                                @if ($photoPath)
+                                @if ($photoDataUri)
                                     <div class="photo-frame has-photo">
-                                        <img src="{{ $photoPath }}" alt="Photo de l’apprenti">
+                                        <img src="{{ $photoDataUri }}" alt="Photo de l’apprenti">
                                     </div>
                                 @else
-                                    <div class="photo-frame"><span>Photo de l’Apprenti</span></div>
+                                    <div class="photo-frame"><span>Photo de<br>l’Apprenti</span></div>
                                 @endif
-                                <div class="photo-caption">
-                                    <strong>{{ $attestation->apprenti_nom_prenom }}</strong>
-                                </div>
+                                <div class="photo-caption"><strong>{{ $attestation->apprenti_nom_prenom }}</strong></div>
                             </td>
                             <td>
-                                <div>Nous, soussignés, <strong>{{ config('business.manager') }}</strong>, <span>Maître Menuisier Alu et
-                                    Vitrier</span>, Directeur de l’Etablissement <br><span class="award">{{ config('business.name') }}</span> certifie par la présente
-                                    que le nommé <strong class="lead">{{ $attestation->apprenti_nom_prenom }}</strong>
+                                <div class="cert-text">
+                                    <p>Nous, soussignés, <strong>{{ config('business.manager') }}</strong>, Maître Menuisier Alu et Vitrier, Directeur de l’établissement <strong>{{ config('business.name') }}</strong>, certifions par les présentes que :</p>
                                 </div>
-                                
-                                <div>
-                                    né(e) le <strong>{{ $attestation->date_naissance?->translatedFormat('d F Y') ?? '—' }}</strong>
-                                    à <strong>{{ $attestation->lieu_naissance ?: '—' }}</strong>,
-                                    de nationalité <strong>{{ $attestation->nationalite }}</strong>,
-                                    a accompli avec assiduité sa période d’apprentissage professionnel pendant une durée de
-                                    <strong>{{ $dureeLettres }} ({{ sprintf('%02d', $dureeValeur) }} {{ $dureeUnite }})</strong>
-                                    du <strong>{{ $attestation->date_debut_apprentissage->translatedFormat('d F Y') }}</strong>
-                                    au <strong>{{ $attestation->date_fin_apprentissage->translatedFormat('d F Y') }}</strong>.
+
+                                <div class="apprentice-name">{{ $attestation->apprenti_nom_prenom }}</div>
+
+                                <div class="cert-text">
+                                    <p>
+                                        né(e) le <strong>{{ $attestation->date_naissance?->translatedFormat('d F Y') ?? '—' }}</strong>
+                                        à <strong>{{ $attestation->lieu_naissance ?: '—' }}</strong>,
+                                        de nationalité <strong>{{ $attestation->nationalite }}</strong>,
+                                        a suivi avec assiduité et succès sa période d’apprentissage professionnel d’une durée de
+                                        <strong>{{ $dureeLettres }} ({{ sprintf('%02d', $dureeValeur) }} {{ $dureeUnite }})</strong>,
+                                        du <strong>{{ $attestation->date_debut_apprentissage->translatedFormat('d F Y') }}</strong>
+                                        au <strong>{{ $attestation->date_fin_apprentissage->translatedFormat('d F Y') }}</strong>.
+                                    </p>
                                 </div>
-                                <div>Dès aujourd'hui et pour toujours, nous lui donnons le titre d’un compétent <span class="award">Maître Menuisier Alu et Vitrier</span></div>           
-                                <div>En foi de qui, nous lui délivrons ce <strong>CERTIFICAT</strong> pour servir et valoir ce que de droit.</div>
+
+                                <div class="specialty-wrap"><span class="specialty-badge">Maître Menuisier Alu et Vitrier</span></div>
+
+                                <div class="closing">En foi de quoi, le présent <strong>CERTIFICAT</strong> lui est délivré pour servir et valoir ce que de droit.</div>
                             </td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="footer">
-                    <table class="footer-table">
-                        <tr>
-                            <td class="date-cell">Fait à Lomé, le <strong>{{ $attestation->date_delivrance->translatedFormat('d F Y') }}</strong></td>
-                            <td class="stamp-cell">
-                                @if (config('business.stamp_image'))
-                                    <div class="stamp has-stamp">
-                                        <img src="{{ public_path(config('business.stamp_image')) }}" alt="Cachet officiel">
-                                    </div>
-                                @else
-                                    <div class="stamp">Cachet officiel</div>
-                                @endif
-                            </td>
-                            <td class="director-cell">
-                                <div class="director-title">Le Directeur</div>
-                                <div class="signature-space">
-                                    @if (config('business.signature_image'))
-                                        <img class="signature-img" src="{{ public_path(config('business.signature_image')) }}" alt="Signature">
-                                    @endif
-                                </div>
-                                <div class="signature-line"></div>
-                                <div class="director-name"><span class="award">{{ config('business.manager') }}</span></div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="footer-col footer-date">Fait à Lomé, le <strong>{{ $attestation->date_delivrance->translatedFormat('d F Y') }}</strong></div>
+
+                    <div class="footer-col footer-stamp">
+                        @if (config('business.stamp_image'))
+                            <div class="stamp has-stamp">
+                                <img src="{{ public_path(config('business.stamp_image')) }}" alt="Cachet officiel">
+                            </div>
+                        @else
+                            <div class="stamp">Cachet<br>officiel</div>
+                        @endif
+                    </div>
+
+                    <div class="footer-col footer-signature">
+                        <div class="director-title">Le Directeur</div>
+                        <div class="signature-space">
+                            @if (config('business.signature_image'))
+                                <img class="signature-img" src="{{ public_path(config('business.signature_image')) }}" alt="Signature">
+                            @endif
+                        </div>
+                        <div class="signature-line"></div>
+                        <div class="director-name">{{ config('business.manager') }}</div>
+                    </div>
                 </div>
             </div>
         </div>
