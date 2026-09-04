@@ -55,6 +55,14 @@ class PdfDocumentService
                 $browserShot->noSandbox();
             }
 
+            $chromiumArgs = array_map(
+                fn (string $argument): string => ltrim($argument, '-'),
+                (array) config('browsershot.chromium_args', [])
+            );
+            if ($chromiumArgs !== []) {
+                $browserShot->addChromiumArguments($chromiumArgs);
+            }
+
             $browserShot->save($targetPath);
 
             return response()->download($targetPath, $filename)->deleteFileAfterSend(true);
