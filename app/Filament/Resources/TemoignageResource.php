@@ -26,7 +26,7 @@ class TemoignageResource extends Resource
         return $form
             ->schema([
                 Section::make('Témoignage client')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\Select::make('devis_id')
                             ->label('Devis lié')
                             ->relationship('devis', 'numero_devis')
@@ -39,7 +39,7 @@ class TemoignageResource extends Resource
                             ->placeholder('devis_0187'),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('nom_client')
                             ->label('Nom du client')
                             ->required()
@@ -49,7 +49,7 @@ class TemoignageResource extends Resource
                             ->maxLength(255),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('projet_type')
                             ->label('Type de projet')
                             ->maxLength(255),
@@ -57,7 +57,7 @@ class TemoignageResource extends Resource
                             ->label('Date du projet'),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\Select::make('note')
                             ->label('Note')
                             ->options([

@@ -26,7 +26,7 @@ class PublicDevisResource extends Resource
         return $form
             ->schema([
                 Section::make('Demande de devis')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('numero_demande')
                             ->label('N° demande')
                             ->readOnly()
@@ -42,7 +42,7 @@ class PublicDevisResource extends Resource
                             ->required(),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('nom')
                             ->label('Nom')
                             ->required()
@@ -54,7 +54,7 @@ class PublicDevisResource extends Resource
                             ->maxLength(30),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('ville')
                             ->label('Ville')
                             ->maxLength(255),

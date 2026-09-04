@@ -97,17 +97,36 @@ class PdfDocumentService
 
     private function assetAsDataUri(string $path): string
     {
-        if (! is_file($path)) {
+        $resolvedPath = realpath($path);
+
+        if ($resolvedPath === false || ! $this->isAllowedAssetPath($resolvedPath)) {
             return $path;
         }
 
-        $contents = file_get_contents($path);
+        $contents = file_get_contents($resolvedPath);
         if ($contents === false) {
             return $path;
         }
 
-        $mimeType = mime_content_type($path) ?: 'application/octet-stream';
+        $mimeType = mime_content_type($resolvedPath) ?: 'application/octet-stream';
 
         return 'data:'.$mimeType.';base64,'.base64_encode($contents);
+    }
+
+    private function isAllowedAssetPath(string $path): bool
+    {
+        $allowedRoots = [
+            realpath(public_path('images')),
+            realpath(public_path('fonts')),
+            realpath(storage_path('app/public')),
+        ];
+
+        foreach (array_filter($allowedRoots) as $root) {
+            if ($path === $root || str_starts_with($path, $root.DIRECTORY_SEPARATOR)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

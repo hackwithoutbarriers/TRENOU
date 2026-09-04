@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
+use InvalidArgumentException;
 
 class PortfolioImageOptimizer
 {
@@ -24,7 +25,14 @@ class PortfolioImageOptimizer
                 continue;
             }
 
+            $this->ensureSafeRelativePath($path);
             $absolutePath = $disk->path($path);
+            $storageRoot = realpath($disk->path(''));
+            $resolvedPath = realpath($absolutePath);
+
+            if ($storageRoot === false || ($resolvedPath !== false && ! $this->isWithinRoot($resolvedPath, $storageRoot))) {
+                throw new InvalidArgumentException('The portfolio image path is outside the public storage disk.');
+            }
 
             if (! file_exists($absolutePath)) {
                 $optimized[] = $path;
@@ -56,5 +64,17 @@ class PortfolioImageOptimizer
         }
 
         return $optimized;
+    }
+
+    private function ensureSafeRelativePath(string $path): void
+    {
+        if ($path === '' || str_starts_with($path, '/') || str_starts_with($path, '\\') || preg_match('/\A[A-Za-z]:[\\\\\/]/', $path) || str_contains(str_replace('\\', '/', $path), '../')) {
+            throw new InvalidArgumentException('The portfolio image path must be relative to public storage.');
+        }
+    }
+
+    private function isWithinRoot(string $path, string $root): bool
+    {
+        return $path === $root || str_starts_with($path, $root.DIRECTORY_SEPARATOR);
     }
 }

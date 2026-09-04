@@ -66,7 +66,7 @@ class AttestationResource extends Resource
                         ->imageResizeTargetWidth(600)
                         ->imageResizeTargetHeight(600)
                         ->visible(fn (Get $get): bool => $get('type_document') === 'certificat'),
-                    Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 3])->schema([
                         Forms\Components\DatePicker::make('date_naissance')
                             ->label('Date de naissance')
                             ->visible(fn (Get $get): bool => $get('type_document') === 'certificat')
@@ -83,7 +83,7 @@ class AttestationResource extends Resource
                             ->required(fn (Get $get): bool => $get('type_document') === 'certificat')
                             ->maxLength(255),
                     ]),
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\DatePicker::make('date_debut_apprentissage')
                             ->label('Date de début de travail / apprentissage')
                             ->required(),
@@ -129,11 +129,13 @@ class AttestationResource extends Resource
                     ->label('Attestation de travail')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->url(fn (Attestation $record): string => route('attestation.pdf', ['attestation' => $record]))
+                    ->visible(fn (Attestation $record): bool => $record->type_document === 'attestation_travail')
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('telecharger_certificat')
                     ->label('Certificat de fin d’apprentissage')
                     ->icon('heroicon-o-academic-cap')
                     ->url(fn (Attestation $record): string => route('certificat.pdf', ['attestation' => $record]))
+                    ->visible(fn (Attestation $record): bool => $record->type_document === 'certificat')
                     ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
             ])

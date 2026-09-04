@@ -25,7 +25,7 @@ class DevisResource extends Resource
         return $form
             ->schema([
                 Section::make('Client')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('client_nom')
                             ->label('Nom du client')
                             ->required()
@@ -36,7 +36,7 @@ class DevisResource extends Resource
                             ->required()
                             ->maxLength(255),
                     ]),
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('client_ville')
                             ->label('Ville du client')
                             ->maxLength(255),
@@ -94,13 +94,13 @@ class DevisResource extends Resource
                                 ->dehydrated()
                                 ->formatStateUsing(fn ($state, Forms\Get $get): float => (float) ($get('quantite') ?? 0) * (float) ($get('prix_unitaire') ?? 0)),
                         ])
-                        ->columns(5)
+                        ->columns(['default' => 1, 'lg' => 5])
                         ->defaultItems(1)
                         ->live()
                         ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set))
                         ->columnSpanFull(),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('total_prestations')
                             ->label('Total prestations')
                             ->numeric()
@@ -116,7 +116,7 @@ class DevisResource extends Resource
                             ->afterStateUpdated(fn (Forms\Get $get, Forms\Set $set) => self::updateGrandTotals($get, $set)),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('acompte_requis_pourcentage')
                             ->label('Acompte requis (%)')
                             ->numeric()

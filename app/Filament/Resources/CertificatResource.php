@@ -59,7 +59,7 @@ class CertificatResource extends Resource
                     ->imageResizeMode('force')
                     ->imageResizeTargetWidth(600)
                     ->imageResizeTargetHeight(600),
-                Forms\Components\Grid::make(3)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 3])->schema([
                     Forms\Components\DatePicker::make('date_naissance')
                         ->label('Date de naissance')
                         ->required(),
@@ -73,7 +73,7 @@ class CertificatResource extends Resource
                         ->required()
                         ->maxLength(255),
                 ]),
-                Forms\Components\Grid::make(3)->schema([
+                Forms\Components\Grid::make(['default' => 1, 'md' => 3])->schema([
                     Forms\Components\DatePicker::make('date_debut_apprentissage')
                         ->label('Début de l’apprentissage')
                         ->required(),

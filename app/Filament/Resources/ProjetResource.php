@@ -25,7 +25,7 @@ class ProjetResource extends Resource
         return $form
             ->schema([
                 Section::make('Projet')->schema([
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('titre')
                             ->label('Titre')
                             ->required()
@@ -45,7 +45,7 @@ class ProjetResource extends Resource
                         ->rows(6)
                         ->columnSpanFull(),
 
-                    Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 3])->schema([
                         Forms\Components\TextInput::make('ville')
                             ->label('Ville')
                             ->required()
@@ -60,7 +60,7 @@ class ProjetResource extends Resource
                             ->default(false),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\TextInput::make('code_suivi_diaspora')
                             ->label('Code de suivi diaspora')
                             ->maxLength(255)

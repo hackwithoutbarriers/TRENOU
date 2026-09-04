@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attestation;
 use App\Models\Devis;
+use App\Models\User;
 use App\Services\PdfDocumentService;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,8 @@ class PdfController extends Controller
 
     public function devis(Devis $devis): Response
     {
+        $this->ensureApprovedUser();
+
         return $this->pdfDocumentService->downloadView(
             'pdf.devis',
             ['devis' => $devis],
@@ -25,6 +28,8 @@ class PdfController extends Controller
 
     public function certificat(Attestation $attestation): Response
     {
+        $this->ensureApprovedUser();
+
         return $this->pdfDocumentService->downloadView(
             'pdf.certificat',
             ['attestation' => $attestation],
@@ -36,6 +41,8 @@ class PdfController extends Controller
 
     public function attestation(Attestation $attestation): Response
     {
+        $this->ensureApprovedUser();
+
         return $this->pdfDocumentService->downloadView(
             'pdf.attestation',
             ['attestation' => $attestation],
@@ -43,5 +50,10 @@ class PdfController extends Controller
             'a4',
             'portrait'
         );
+    }
+
+    private function ensureApprovedUser(): void
+    {
+        abort_unless(auth()->user() instanceof User && auth()->user()->isApproved(), 403);
     }
 }
