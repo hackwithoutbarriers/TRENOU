@@ -2,15 +2,12 @@
 # Compile Vite assets in a separate stage.
 FROM node:24-alpine AS frontend
 WORKDIR /app
-ENV PUPPETEER_SKIP_DOWNLOAD=true
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
 RUN npm run build
-# Node is also required at runtime by Browsershot.
-FROM node:24-bookworm-slim AS node-runtime
 # Install production PHP dependencies with the extensions required by the lockfile.
 FROM php:8.4-cli AS vendor
 WORKDIR /app
@@ -79,23 +76,9 @@ RUN apt-get update \
         libsqlite3-dev \
         libxml2-dev \
         libzip-dev \
-        chromium \
-        fonts-liberation \
-        libatk-bridge2.0-0 \
-        libatk1.0-0 \
-        libcups2 \
-        libgbm1 \
-        libgtk-3-0 \
-        libnss3 \
-        libx11-xcb1 \
-        libxcomposite1 \
-        libxdamage1 \
-        libxrandr2 \
-        libxss1 \
-        xdg-utils \
         unzip \
     && rm -rf /var/lib/apt/lists/*
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath curl exif gd intl mbstring opcache pcntl pdo_pgsql pdo_mysql pdo_sqlite xml zip
 # Configure Apache once. Do not edit both sites-available and sites-enabled:
@@ -118,14 +101,7 @@ RUN a2enmod rewrite \
     && apachectl -t
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
-COPY --from=frontend /app/node_modules ./node_modules
-COPY --from=node-runtime /usr/local/bin/node /usr/local/bin/node
-COPY --from=node-runtime /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
 COPY --from=frontend /app/public/build ./public/build
-ENV PATH="/usr/local/lib/node_modules/npm/bin:${PATH}" \
-    PUPPETEER_SKIP_DOWNLOAD=true \
-    BROWSERSHOT_CHROME_PATH=/usr/bin/chromium \
-    BROWSERSHOT_NO_SANDBOX=true
 RUN test -f public/index.php
 RUN mkdir -p \
         database \
@@ -147,4 +123,4 @@ RUN mkdir -p \
     && php artisan package:discover --ansi
 EXPOSE 80
 # Configure APP_URL, database, mail and secrets in Render.
-CMD ["sh", "-c", "php artisan storage:link --force && php artisan migrate --force && php artisan config:cache && php artisan app:provision-admin && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+CMD ["sh", "-c", "php artisan storage:link --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
