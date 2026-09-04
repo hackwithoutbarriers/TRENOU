@@ -124,4 +124,4 @@ RUN mkdir -p \
     && php artisan package:discover --ansi
 EXPOSE 80
 # Configure APP_URL, database, mail and secrets in Render.
-CMD ["sh", "-c", "php artisan storage:link --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+CMD ["sh", "-c", "php artisan storage:link --force && php artisan migrate --force && (php artisan app:provision-admin || true) && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
