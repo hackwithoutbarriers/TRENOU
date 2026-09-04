@@ -78,7 +78,7 @@ RUN apt-get update \
         libzip-dev \
         unzip \
     && rm -rf /var/lib/apt/lists/*
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath curl exif gd intl mbstring opcache pcntl pdo_pgsql pdo_mysql pdo_sqlite xml zip
 # Configure Apache once. Do not edit both sites-available and sites-enabled:
