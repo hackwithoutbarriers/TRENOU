@@ -19,12 +19,13 @@ RUN apt-get update \
         libjpeg62-turbo-dev \
         libonig-dev \
         libpng-dev \
+        libwebp-dev \
         libpq-dev \
         libsqlite3-dev \
         libxml2-dev \
         libzip-dev \
         unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath \
         curl \
@@ -38,6 +39,7 @@ RUN apt-get update \
         pdo_sqlite \
         xml \
         zip \
+    && php -r "if (! function_exists('imagewebp')) { fwrite(STDERR, 'GD WebP support is required.\\n'); exit(1); }" \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
@@ -70,6 +72,7 @@ RUN apt-get update \
         libcurl4-openssl-dev \
         libicu-dev \
         libjpeg62-turbo-dev \
+        libwebp-dev \
         libonig-dev \
         libpng-dev \
         libpq-dev \
@@ -81,6 +84,7 @@ RUN apt-get update \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath curl exif gd intl mbstring opcache pcntl pdo_pgsql pdo_mysql pdo_sqlite xml zip
+RUN php -r "if (! function_exists('imagewebp')) { fwrite(STDERR, 'GD WebP support is required.\\n'); exit(1); }"
 # Configure Apache once. Do not edit both sites-available and sites-enabled:
 # the latter contains symlinks to the same vhost files, so editing both applies
 # the replacement twice and produces /var/www/html/public/public.
@@ -123,4 +127,4 @@ RUN mkdir -p \
     && php artisan package:discover --ansi
 EXPOSE 80
 # Configure APP_URL, database, mail and secrets in Render.
-CMD ["sh", "-c", "php artisan storage:link --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+CMD ["sh", "-c", "php artisan storage:link --force && php artisan migrate --force && (php artisan app:provision-admin || true) && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
