@@ -177,7 +177,7 @@
         }
 
         .footer-col { font-size: 10pt; }
-        .footer-date { width: 30%; color: #1A202C; }
+        .footer-date { position: relative; left: 4mm; bottom: 3mm; width: 30%; color: #1A202C; }
         .footer-date strong { color: #104482; }
 
         .footer-stamp { width: 26%; text-align: center; }
