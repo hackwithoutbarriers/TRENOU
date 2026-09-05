@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Attestation de Travail {{ $serialNumber ?? $attestation->documentNumber('ATT') }}</title>
+    <title>Attestation de Fin d'Apprentissage {{ $serialNumber ?? $attestation->documentNumber('ATT') }}</title>
     <style>
         @page { size: A4; margin: 0; }
 
@@ -178,8 +178,10 @@
             display: block;
             width: auto;
             height: auto;
-            max-width: 42mm;
-            max-height: 24mm;
+           /* max-width: 42mm;
+            max-height: 24mm;*/
+            max-width: 62mm;
+            max-height: 34mm;
             object-fit: contain;
             flex: 0 0 auto;
         }
@@ -191,8 +193,10 @@
         .company-name {
             color: var(--blue);
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 16.5pt;
-            font-weight: 700;
+            /*font-size: 16.5pt;
+            font-weight: 700;*/
+            font-size: 20pt;
+            font-weight: 800;
             letter-spacing: .6px;
             text-transform: uppercase;
             line-height: 1.15;
@@ -201,7 +205,7 @@
             margin: 2.2mm auto 0;
             max-width: 120mm;
             color: var(--gray-dark);
-            font-size: 9.4pt;
+            font-size: 10pt;
             font-style: italic;
             line-height: 1.3;
         }
@@ -492,8 +496,8 @@
                     <div class="content-inner">
                         <div class="title-block">
                             <div class="kicker">Attestation Officielle</div>
-                            <h1>Attestation de Travail</h1>
-                            <div class="subtitle">Délivrée en complément du Certificat de Fin d'Apprentissage</div>
+                            <h1>ATTESTATION DE FIN D’APPRENTISSAGE</h1>
+                            <div class="subtitle">Délivré suite à la validation d’un parcours qualifiant</div>
                             <div class="title-rule"></div>
                         </div>
                         <div class="body">
@@ -517,7 +521,7 @@
                             </div>
 
                             <p>a servi sous mes ordres avec assiduité et rigueur durant toute la période susmentionnée, dans le cadre de sa formation en apprentissage au sein de notre établissement.</p>
-                            <p>En foi de quoi, je lui délivre cette présente <strong>Attestation de Travail</strong> pour servir et valoir ce que de droit.</p>
+                            <p>En foi de quoi, je lui délivre cette présente <strong>Attestation</strong> pour servir et valoir ce que de droit.</p>
                         </div>
                     </div>
                 </div>
@@ -535,11 +539,11 @@
                         @endif
                         <div class="signature-name">{{ config('business.manager') }}</div>
                         <div class="stamp">
-                            @if(config('business.stamp_image'))
+                         <!--   @if(config('business.stamp_image'))
                                 <img src="{{ public_path(config('business.stamp_image')) }}" alt="Cachet">
                             @else
                                 <div class="stamp-placeholder">ETS ALU<br>LA SOLUTION<br>Cachet officiel</div>
-                            @endif
+                            @endif-->
                         </div>
                     </div>
                 </div>
