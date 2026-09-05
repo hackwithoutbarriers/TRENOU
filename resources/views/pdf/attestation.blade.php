@@ -59,59 +59,39 @@
             width: 100%;
             height: 297mm;
             margin: 0;
-            padding: 9mm;
+            padding: 7mm;
         }
 
-        /* Cadre d'honneur : double filet + coupes d'angle mitrées */
-        .frame {
+        /* Cadre identique au certificat : double filet et coins ornementaux */
+        .frame-outer {
             position: relative;
-            z-index: 1;
             height: 100%;
-            border: 2px solid var(--blue);
-            clip-path: polygon(
-                10mm 0, calc(100% - 10mm) 0, 100% 10mm,
-                100% calc(100% - 10mm), calc(100% - 10mm) 100%, 10mm 100%,
-                0 calc(100% - 10mm), 0 10mm
-            );
-        }
-        .frame::before {
-            content: '';
-            position: absolute;
-            inset: 2.6mm;
-            border: 0.75px solid var(--blue);
-            opacity: .5;
-            pointer-events: none;
-        }
-        .frame::after {
-            content: '';
-            position: absolute;
-            inset: 4.6mm;
-            border: 0.6px solid var(--rule);
-            pointer-events: none;
+            border: 2.5px solid var(--blue);
+            padding: 2.5mm;
         }
 
-        /* Petits repères ornementaux sur les coupes d'angle */
-        .corner-mark {
-            position: absolute;
-            z-index: 2;
-            width: 2.6mm;
-            height: 2.6mm;
-            background: var(--blue);
-            transform: rotate(45deg);
-        }
-        .corner-mark.tl { top: 5.4mm; left: 5.4mm; }
-        .corner-mark.tr { top: 5.4mm; right: 5.4mm; }
-        .corner-mark.bl { bottom: 5.4mm; left: 5.4mm; }
-        .corner-mark.br { bottom: 5.4mm; right: 5.4mm; }
-
-        .inner {
+        .frame-inner {
             position: relative;
             display: flex;
             flex-direction: column;
             height: 100%;
-            padding: 10mm 14mm 9mm;
+            border: 1px solid var(--blue);
+            padding: 7mm 14mm 9mm;
             overflow: hidden;
         }
+
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            z-index: 2;
+        }
+        .corner .c1 { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-top: 3px solid var(--blue); border-left: 3px solid var(--blue); }
+        .corner .c2 { position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; border-top: 1px solid #9fb3cf; border-left: 1px solid #9fb3cf; }
+        .corner.tl { top: -1px; left: -1px; }
+        .corner.tr { top: -1px; right: -1px; transform: scaleX(-1); }
+        .corner.bl { bottom: -1px; left: -1px; transform: scaleY(-1); }
+        .corner.br { bottom: -1px; right: -1px; transform: scale(-1, -1); }
 
         /* ---------- Filigrane ---------- */
         .watermark {
@@ -291,7 +271,7 @@
         .body {
             width: 100%;
             color: var(--ink-soft);
-            font-size: 11.6px;
+            font-size: 12.4px;
             line-height: 1.95;
             letter-spacing: .05px;
             text-align: justify;
@@ -372,7 +352,7 @@
             width: 27mm;
             height: 27mm;
             margin: 6mm auto 0;
-            border: 1px dashed var(--gray);
+          /*  border: 1px dashed var(--gray);*/
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -467,13 +447,12 @@
     @endphp
 
     <div class="page">
-        <div class="frame">
-            <span class="corner-mark tl"></span>
-            <span class="corner-mark tr"></span>
-            <span class="corner-mark bl"></span>
-            <span class="corner-mark br"></span>
-
-            <div class="inner">
+        <div class="frame-outer">
+            <div class="frame-inner">
+                <div class="corner tl"><div class="c1"></div><div class="c2"></div></div>
+                <div class="corner tr"><div class="c1"></div><div class="c2"></div></div>
+                <div class="corner bl"><div class="c1"></div><div class="c2"></div></div>
+                <div class="corner br"><div class="c1"></div><div class="c2"></div></div>
 
                 <img class="watermark" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="">
                 <div class="watermark-pattern"></div>
