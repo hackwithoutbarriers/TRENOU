@@ -15,32 +15,7 @@ class ReviewData
         $apiKey = config('services.google.key') ?: env('GOOGLE_PLACES_KEY');
 
         if (blank($placeId) || blank($apiKey)) {
-            return [
-                [
-                    'source' => 'google',
-                    'sourceLabel' => 'Google',
-                    'author' => 'Moussa B.',
-                    'city' => 'Lomé',
-                    'rating' => 5,
-                    'text' => 'Très bon suivi, finition impeccable et équipe très professionnelle. Le projet a été livré dans les délais.',
-                    'date' => now()->subDays(8)->toDateString(),
-                    'verified' => false,
-                    'photo' => null,
-                    'project' => 'Verrière sur mesure',
-                ],
-                [
-                    'source' => 'google',
-                    'sourceLabel' => 'Google',
-                    'author' => 'Afi K.',
-                    'city' => 'Kara',
-                    'rating' => 5,
-                    'text' => 'Le résultat est à la hauteur de nos attentes. On sent le souci du détail et le savoir-faire artisanal.',
-                    'date' => now()->subDays(18)->toDateString(),
-                    'verified' => false,
-                    'photo' => null,
-                    'project' => 'Portes et menuiserie',
-                ],
-            ];
+            return [];
         }
 
         return Cache::remember('google_reviews', 86400, function () use ($placeId, $apiKey) {
@@ -164,15 +139,10 @@ class ReviewData
         $reviews = $this->mergedReviews();
         $summary = $this->summary();
 
-        return [
+        $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'LocalBusiness',
             'name' => 'TRENOU',
-            'aggregateRating' => [
-                '@type' => 'AggregateRating',
-                'ratingValue' => (string) $summary['average'],
-                'reviewCount' => (string) $summary['count'],
-            ],
             'review' => array_values(array_map(function (array $review): array {
                 return [
                     '@type' => 'Review',
@@ -188,5 +158,15 @@ class ReviewData
                 ];
             }, array_slice($reviews, 0, 10))),
         ];
+
+        if ($summary['count'] > 0) {
+            $schema['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => (string) $summary['average'],
+                'reviewCount' => (string) $summary['count'],
+            ];
+        }
+
+        return $schema;
     }
 }
