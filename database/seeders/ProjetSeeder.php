@@ -16,7 +16,7 @@ class ProjetSeeder extends Seeder
             [
                 'titre' => 'Baies vitrées coulissantes – Villa Agoè',
                 'categorie' => 'batiment',
-                'description' => 'Fabrication et pose de trois baies vitrées en aluminium avec système coulissant, vitrage sécurité et finition anthracite pour une villa côtière à Agoè.',
+                'description' => 'Projet de démonstration à remplacer : fabrication et pose de trois baies vitrées en aluminium avec système coulissant, vitrage sécurité et finition anthracite pour une villa contemporaine à Agoè.',
                 'ville' => 'Lomé',
                 'pays' => 'Togo',
                 'is_visible_public' => true,
@@ -29,7 +29,7 @@ class ProjetSeeder extends Seeder
             [
                 'titre' => 'Mur-rideau et gardes-corps – Baguida',
                 'categorie' => 'batiment',
-                'description' => 'Mise en œuvre d’un mur-rideau aluminium gris métallisé et de garde-corps sur mesure pour un immeuble tertiaire intégrant un niveau de lumière naturel optimal.',
+                'description' => 'Projet de démonstration à remplacer : mise en œuvre d’un mur-rideau aluminium gris métallisé et de garde-corps sur mesure pour un immeuble tertiaire à forte luminosité naturelle.',
                 'ville' => 'Lomé',
                 'pays' => 'Togo',
                 'is_visible_public' => true,
@@ -42,7 +42,7 @@ class ProjetSeeder extends Seeder
             [
                 'titre' => 'Fenêtres coulissantes – Résidence Kpalimé',
                 'categorie' => 'batiment',
-                'description' => 'Rénovation complète d’une résidence avec fenêtres coulissantes aluminium thermolaqué blanc satin, joints de qualité et système anti-souffle adapté au climat côtier.',
+                'description' => 'Projet de démonstration à remplacer : rénovation complète d’une résidence avec fenêtres coulissantes aluminium thermolaqué blanc satin, joints de qualité et système anti-souffle adapté au climat côtier.',
                 'ville' => 'Kpalimé',
                 'pays' => 'Togo',
                 'is_visible_public' => true,
@@ -55,7 +55,7 @@ class ProjetSeeder extends Seeder
             [
                 'titre' => 'Cuisine aluminium moderne – Tokoin',
                 'categorie' => 'mobilier',
-                'description' => 'Cuisine intégrée sur mesure avec façades en aluminium laqué, plan de travail stratifié, îlot central et rangement optimisé pour un logement urbain moderne.',
+                'description' => 'Projet de démonstration à remplacer : cuisine intégrée sur mesure avec façades en aluminium laqué, plan de travail stratifié, îlot central et rangement optimisé pour un logement urbain moderne.',
                 'ville' => 'Lomé',
                 'pays' => 'Togo',
                 'is_visible_public' => true,
@@ -68,7 +68,7 @@ class ProjetSeeder extends Seeder
             [
                 'titre' => 'Comptoir commercial aluminium – Adidogomé',
                 'categorie' => 'mobilier',
-                'description' => 'Fabrication d’un comptoir de vente et d’accueil sur mesure pour un point de vente actif, avec matériaux résistants, finition miroir et éléments de rangement intégrés.',
+                'description' => 'Projet de démonstration à remplacer : fabrication d’un comptoir de vente et d’accueil sur mesure pour un point de vente, avec matériaux résistants, finition miroir et rangements intégrés.',
                 'ville' => 'Lomé',
                 'pays' => 'Togo',
                 'is_visible_public' => true,
@@ -81,7 +81,7 @@ class ProjetSeeder extends Seeder
             [
                 'titre' => 'Table haute lounge – Cotonou',
                 'categorie' => 'mobilier',
-                'description' => 'Création d’une table-haute en aluminium et bois pour un espace de restauration haut de gamme avec finition élégante et structure légère.',
+                'description' => 'Projet de démonstration à remplacer : création d’une table haute en aluminium et bois pour un espace de restauration haut de gamme avec finition élégante et structure légère.',
                 'ville' => 'Cotonou',
                 'pays' => 'Bénin',
                 'is_visible_public' => true,
@@ -133,7 +133,10 @@ class ProjetSeeder extends Seeder
         ];
 
         foreach ($projects as $project) {
-            Projet::updateOrCreate(['titre' => $project['titre']], $project);
+            Projet::firstOrCreate(
+                ['code_suivi_diaspora' => $project['code_suivi_diaspora']],
+                $project,
+            );
         }
     }
 }
