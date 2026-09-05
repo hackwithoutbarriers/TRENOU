@@ -122,6 +122,7 @@ RUN a2enmod rewrite \
     && apachectl -t
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
+RUN rm -f public/hot
 COPY --from=frontend /app/node_modules ./node_modules
 COPY --from=node-runtime /usr/local/bin/node /usr/local/bin/node
 COPY --from=node-runtime /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
