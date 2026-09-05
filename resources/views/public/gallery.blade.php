@@ -13,7 +13,7 @@
             <div class="grid gap-3 md:grid-cols-4">
                 <label class="text-sm font-medium text-slate-600">
                     <span class="mb-1 block">Catégorie</span>
-                    <select name="categorie" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-slate-900 focus:border-amber-400 focus:outline-none">
+                    <select name="categorie" autocomplete="off" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-slate-900 focus:border-amber-400 focus:outline-none">
                         <option value="">Toutes</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category }}" {{ request('categorie') === $category ? 'selected' : '' }}>{{ ucfirst($category) }}</option>
@@ -23,7 +23,7 @@
 
                 <label class="text-sm font-medium text-slate-600">
                     <span class="mb-1 block">Ville</span>
-                    <select name="ville" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-slate-900 focus:border-amber-400 focus:outline-none">
+                    <select name="ville" autocomplete="address-level2" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-slate-900 focus:border-amber-400 focus:outline-none">
                         <option value="">Toutes</option>
                         @foreach ($cities as $city)
                             <option value="{{ $city }}" {{ request('ville') === $city ? 'selected' : '' }}>{{ $city }}</option>
@@ -33,7 +33,7 @@
 
                 <label class="text-sm font-medium text-slate-600">
                     <span class="mb-1 block">Pays</span>
-                    <select name="pays" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-slate-900 focus:border-amber-400 focus:outline-none">
+                    <select name="pays" autocomplete="country-name" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-slate-900 focus:border-amber-400 focus:outline-none">
                         <option value="">Tous</option>
                         @foreach ($countries as $country)
                             <option value="{{ $country }}" {{ request('pays') === $country ? 'selected' : '' }}>{{ $country }}</option>

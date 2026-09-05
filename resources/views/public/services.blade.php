@@ -16,8 +16,14 @@
         <div class="mt-8 grid gap-5 lg:grid-cols-2">
             @foreach ($serviceCategories as $category)
                 <article id="{{ $category['slug'] }}" class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-xl">
-                        {{ $category['slug'] === 'menuiserie-batiment' ? '🏗️' : ($category['slug'] === 'menuiserie-aluminium' ? '🪟' : '🪑') }}
+                    <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700" aria-hidden="true">
+                        @if ($category['slug'] === 'menuiserie-batiment')
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-7h6v7M8 10h.01M12 10h.01M16 10h.01"/></svg>
+                        @elseif ($category['slug'] === 'menuiserie-aluminium')
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM12 4v16M4 12h16"/></svg>
+                        @else
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 11V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M4 11h16v4H4zM7 15v5M17 15v5"/></svg>
+                        @endif
                     </div>
                     <h2 class="text-2xl font-bold text-slate-900">{{ $category['title'] }}</h2>
                     <p class="mt-3 text-sm leading-7 text-slate-600">{{ $category['summary'] }}</p>

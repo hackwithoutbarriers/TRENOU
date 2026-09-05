@@ -33,33 +33,33 @@
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>
                         <label for="nom_client" class="mb-2 block text-sm font-medium text-slate-700">Nom du client</label>
-                        <input id="nom_client" name="nom_client" type="text" value="{{ old('nom_client', $prefillName) }}" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
+                        <input id="nom_client" name="nom_client" type="text" value="{{ old('nom_client', $prefillName) }}" autocomplete="name" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
                     </div>
                     <div>
                         <label for="ville" class="mb-2 block text-sm font-medium text-slate-700">Ville</label>
-                        <input id="ville" name="ville" type="text" value="{{ old('ville') }}" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
+                        <input id="ville" name="ville" type="text" value="{{ old('ville') }}" autocomplete="address-level2" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
                     </div>
                 </div>
 
                 <div class="grid gap-5 md:grid-cols-3">
                     <div>
                         <label for="projet_type" class="mb-2 block text-sm font-medium text-slate-700">Type de projet</label>
-                        <input id="projet_type" name="projet_type" type="text" value="{{ old('projet_type') }}" placeholder="mobilier, baie vitrée..." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
+                        <input id="projet_type" name="projet_type" type="text" value="{{ old('projet_type') }}" autocomplete="off" placeholder="mobilier, baie vitrée..." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
                     </div>
                     <div>
                         <label for="projet_ref" class="mb-2 block text-sm font-medium text-slate-700">Référence du devis</label>
-                        <input id="projet_ref" name="projet_ref" type="text" value="{{ old('projet_ref', $prefillProjectRef) }}" placeholder="DEV-00001" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
+                        <input id="projet_ref" name="projet_ref" type="text" value="{{ old('projet_ref', $prefillProjectRef) }}" autocomplete="off" placeholder="DEV-00001" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
                     </div>
                     <div>
                         <label for="date_projet" class="mb-2 block text-sm font-medium text-slate-700">Date du projet</label>
-                        <input id="date_projet" name="date_projet" type="date" value="{{ old('date_projet', now()->toDateString()) }}" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
+                        <input id="date_projet" name="date_projet" type="date" value="{{ old('date_projet', now()->toDateString()) }}" autocomplete="off" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
                     </div>
                 </div>
 
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>
                         <label for="note" class="mb-2 block text-sm font-medium text-slate-700">Note</label>
-                        <select id="note" name="note" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
+                        <select id="note" name="note" autocomplete="off" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200">
                             @for ($i = 5; $i >= 1; $i--)
                                 <option value="{{ $i }}" {{ old('note', 5) == $i ? 'selected' : '' }}>{{ $i }} étoile{{ $i > 1 ? 's' : '' }}</option>
                             @endfor
@@ -74,7 +74,7 @@
 
                 <div>
                     <label for="texte" class="mb-2 block text-sm font-medium text-slate-700">Votre avis</label>
-                    <textarea id="texte" name="texte" rows="6" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200" placeholder="Décrivez votre expérience, la qualité du travail, le professionnalisme et la finition...">{{ old('texte') }}</textarea>
+                    <textarea id="texte" name="texte" rows="6" autocomplete="off" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200" placeholder="Décrivez votre expérience, la qualité du travail, le professionnalisme et la finition...">{{ old('texte') }}</textarea>
                 </div>
 
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">

@@ -56,7 +56,7 @@
                             <button type="button" id="next-step" class="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-amber-500 px-5 py-3 text-sm font-bold text-slate-900 shadow-[0_8px_20px_rgba(245,158,11,0.2)] transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none sm:w-auto">
                                 Suivant
                             </button>
-                            <button type="submit" id="submit-quote" class="hidden inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)] transition hover:bg-slate-700 disabled:cursor-wait disabled:opacity-70 sm:flex-none sm:w-auto">
+                            <button type="submit" id="submit-quote" class="hidden min-h-12 flex-1 items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)] transition hover:bg-slate-700 disabled:cursor-wait disabled:opacity-70 sm:flex-none sm:w-auto">
                                 Envoyer ma demande
                             </button>
                         </div>

@@ -54,33 +54,33 @@
 
                     <label class="block text-sm font-medium text-slate-700">
                         <span class="mb-2 block">Nom</span>
-                        <input name="nom" value="{{ old('nom') }}" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Votre nom" />
+                        <input name="nom" value="{{ old('nom') }}" autocomplete="name" required class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Votre nom" />
                         @error('nom')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
                     </label>
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="block text-sm font-medium text-slate-700">
                             <span class="mb-2 block">Email</span>
-                            <input type="email" name="email" value="{{ old('email') }}" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="vous@example.com" />
+                            <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="vous@example.com" />
                             @error('email')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
                         </label>
 
                         <label class="block text-sm font-medium text-slate-700">
                             <span class="mb-2 block">Téléphone</span>
-                            <input type="tel" inputmode="tel" name="telephone" value="{{ old('telephone') }}" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
+                            <input type="tel" inputmode="tel" name="telephone" value="{{ old('telephone') }}" autocomplete="tel" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
                             @error('telephone')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
                         </label>
                     </div>
 
                     <label class="block text-sm font-medium text-slate-700">
                         <span class="mb-2 block">Objet</span>
-                        <input name="sujet" value="{{ old('sujet') }}" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Demande de devis, rénovation, etc." />
+                        <input name="sujet" value="{{ old('sujet') }}" autocomplete="off" required class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Demande de devis, rénovation, etc." />
                         @error('sujet')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
                     </label>
 
                     <label class="block text-sm font-medium text-slate-700">
                         <span class="mb-2 block">Message</span>
-                        <textarea name="message" rows="5" class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Détailler votre besoin ...">{{ old('message') }}</textarea>
+                        <textarea name="message" rows="5" autocomplete="off" required class="w-full rounded-2xl border border-stone-200 bg-stone-50 px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Détailler votre besoin ...">{{ old('message') }}</textarea>
                         @error('message')<span class="mt-1 block text-xs text-red-600">{{ $message }}</span>@enderror
                     </label>
 

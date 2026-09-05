@@ -5,9 +5,9 @@
 
 @section('content')
     <section class="relative isolate min-h-[560px] overflow-hidden bg-slate-900 text-white sm:min-h-[620px]">
-        <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.38)), url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80');"></div>
-        <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.42)), url('https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80');"></div>
-        <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.35)), url('https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.38)), url('{{ asset('images/hero/atelier-aluminium-1.svg') }}');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.42)), url('{{ asset('images/hero/atelier-aluminium-2.svg') }}');"></div>
+        <div class="hero-slide" style="background-image: linear-gradient(110deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.35)), url('{{ asset('images/hero/atelier-aluminium-3.svg') }}');"></div>
 
         <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/75 to-slate-900/30"></div>
 
@@ -53,7 +53,7 @@
                 <div class="mt-2 text-sm text-slate-600">chantiers réalisés</div>
             </div>
             <div class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-                <div class="text-3xl font-black text-slate-900">10 ans</div>
+                <div class="text-3xl font-black text-slate-900">20+ ans</div>
                 <div class="mt-2 text-sm text-slate-600">d’expertise</div>
             </div>
             <div class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
@@ -76,6 +76,32 @@
         $carouselReviews = array_merge($featuredReviews, $featuredReviews);
     @endphp
 
+
+    @if ($summary['count'] > 0)
+        <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="home-reviews-title">
+            <div class="mb-6 flex items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Témoignages</p>
+                    <h2 id="home-reviews-title" class="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">Ce que disent nos clients</h2>
+                </div>
+                <a href="{{ route('reviews') }}" class="text-sm font-semibold text-amber-600 hover:text-amber-700">Voir tous les avis</a>
+            </div>
+            <div class="grid gap-4 md:grid-cols-3">
+                @foreach (array_slice($featuredReviews, 0, 3) as $review)
+                    <article class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-bold text-slate-900">{{ $review['author'] }}</h3>
+                            <span class="text-sm text-amber-500" aria-label="Note {{ $review['rating'] }} sur 5">
+                                {{ str_repeat('★', (int) $review['rating']) }}{{ str_repeat('☆', 5 - (int) $review['rating']) }}
+                            </span>
+                        </div>
+                        <p class="mt-1 text-xs text-slate-500">{{ $review['city'] }}</p>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">{{ $review['text'] }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
 
     <style>
         .testimonial-track {
@@ -114,14 +140,18 @@
 
         <div class="grid gap-4 sm:grid-cols-2">
             <article class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-                <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-xl">🏗️</div>
+                <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700" aria-hidden="true">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-7h6v7M8 10h.01M12 10h.01M16 10h.01"/></svg>
+                </div>
                 <h3 class="text-xl font-bold text-slate-900">Bâtiment</h3>
                 <p class="mt-3 text-sm leading-6 text-slate-600">Portes, fenêtres, baies vitrées, garde-corps, murs-rideaux et façades aluminium pour maisons, villas, bureaux et établissements commerciaux.</p>
                 <a href="{{ route('services.detail', ['slug' => 'menuiserie-batiment']) }}" class="mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-amber-600">En savoir plus</a>
             </article>
 
             <article class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-                <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-xl">🪑</div>
+                <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700" aria-hidden="true">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 11V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M4 11h16v4H4zM7 15v5M17 15v5"/></svg>
+                </div>
                 <h3 class="text-xl font-bold text-slate-900">Mobilier</h3>
                 <p class="mt-3 text-sm leading-6 text-slate-600">Cuisines intégrées, comptoirs de vente, tables hautes, armoires et rangements sur mesure pour des espaces fonctionnels et élégants.</p>
                 <a href="{{ route('services.detail', ['slug' => 'mobilier-sur-mesure']) }}" class="mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-amber-600">En savoir plus</a>
