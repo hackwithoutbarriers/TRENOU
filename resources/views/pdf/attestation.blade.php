@@ -420,11 +420,29 @@
 </head>
 <body>
     @php
-        // Capitalise le mois d'une date Carbon en français ("janvier" -> "Janvier")
-        $frDate = function ($date) {
-            $mois = $date->translatedFormat('F');
-            $moisMaj = mb_strtoupper(mb_substr($mois, 0, 1)) . mb_substr($mois, 1);
-            return $date->format('d') . ' ' . $moisMaj . ' ' . $date->format('Y');
+        $moisFrancais = [
+            1 => 'janvier',
+            2 => 'février',
+            3 => 'mars',
+            4 => 'avril',
+            5 => 'mai',
+            6 => 'juin',
+            7 => 'juillet',
+            8 => 'août',
+            9 => 'septembre',
+            10 => 'octobre',
+            11 => 'novembre',
+            12 => 'décembre',
+        ];
+
+        $frDate = function ($date) use ($moisFrancais) {
+            if ($date === null) {
+                return '—';
+            }
+
+            $mois = $moisFrancais[$date->month];
+
+            return $date->format('d') . ' ' . mb_strtoupper(mb_substr($mois, 0, 1)) . mb_substr($mois, 1) . ' ' . $date->format('Y');
         };
 
         // Nombre de mots en français pour la durée d'apprentissage (1 à 20)

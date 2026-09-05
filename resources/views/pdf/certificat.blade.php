@@ -222,6 +222,29 @@
 @endphp
 <body>
     @php
+        $moisFrancais = [
+            1 => 'janvier',
+            2 => 'février',
+            3 => 'mars',
+            4 => 'avril',
+            5 => 'mai',
+            6 => 'juin',
+            7 => 'juillet',
+            8 => 'août',
+            9 => 'septembre',
+            10 => 'octobre',
+            11 => 'novembre',
+            12 => 'décembre',
+        ];
+        $frDate = function ($date) use ($moisFrancais): string {
+            if ($date === null) {
+                return '—';
+            }
+
+            $mois = $moisFrancais[$date->month];
+
+            return $date->format('d') . ' ' . mb_strtoupper(mb_substr($mois, 0, 1)) . mb_substr($mois, 1) . ' ' . $date->format('Y');
+        };
         $chiffresEnLettres = [
             1 => 'Un', 2 => 'Deux', 3 => 'Trois', 4 => 'Quatre', 5 => 'Cinq',
             6 => 'Six', 7 => 'Sept', 8 => 'Huit', 9 => 'Neuf', 10 => 'Dix',
@@ -285,13 +308,13 @@
 
                                 <div class="cert-text">
                                     <p>
-                                        né(e) le <strong>{{ $attestation->date_naissance?->translatedFormat('d F Y') ?? '—' }}</strong>
+                                        né(e) le <strong>{{ $frDate($attestation->date_naissance) }}</strong>
                                         à <strong>{{ $attestation->lieu_naissance ?: '—' }}</strong>,
                                         de nationalité <strong>{{ $attestation->nationalite }}</strong>,
                                         a suivi avec assiduité et succès sa période d’apprentissage professionnel d’une durée de
                                         <strong>{{ $dureeLettres }} ({{ sprintf('%02d', $dureeValeur) }} {{ $dureeUnite }})</strong>,
-                                        du <strong>{{ $attestation->date_debut_apprentissage->translatedFormat('d F Y') }}</strong>
-                                        au <strong>{{ $attestation->date_fin_apprentissage->translatedFormat('d F Y') }}</strong>.
+                                        du <strong>{{ $frDate($attestation->date_debut_apprentissage) }}</strong>
+                                        au <strong>{{ $frDate($attestation->date_fin_apprentissage) }}</strong>.
                                     </p>
                                 </div>
 
@@ -304,7 +327,7 @@
                 </div>
 
                 <div class="footer">
-                    <div class="footer-col footer-date">Fait à Lomé, le <strong>{{ $attestation->date_delivrance->translatedFormat('d F Y') }}</strong></div>
+                    <div class="footer-col footer-date">Fait à Lomé, le <strong>{{ $frDate($attestation->date_delivrance) }}</strong></div>
 
                     <div class="footer-col footer-stamp">
                         @if (config('business.stamp_image'))
