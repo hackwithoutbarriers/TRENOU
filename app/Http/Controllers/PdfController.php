@@ -34,7 +34,8 @@ class PdfController extends Controller
             ['devis' => $devis],
             'devis-'.Str::slug($devis->numero_devis).'.pdf',
             'a4',
-            'portrait'
+            'portrait',
+            'devis-'.$devis->getKey().'-'.($devis->updated_at?->getTimestamp() ?? 0)
         );
     }
 
@@ -50,7 +51,8 @@ class PdfController extends Controller
             ],
             'certificat-'.Str::slug($attestation->documentNumber('CERT')).'.pdf',
             'a4',
-            'landscape'
+            'landscape',
+            'certificat-'.$attestation->getKey().'-'.($attestation->updated_at?->getTimestamp() ?? 0)
         );
     }
 
@@ -66,7 +68,8 @@ class PdfController extends Controller
             ],
             'attestation-'.Str::slug($attestation->documentNumber('ATT')).'.pdf',
             'a4',
-            'portrait'
+            'portrait',
+            'attestation-'.$attestation->getKey().'-'.($attestation->updated_at?->getTimestamp() ?? 0)
         );
     }
 
