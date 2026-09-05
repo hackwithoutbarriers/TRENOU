@@ -15,10 +15,24 @@ class PublicDevis extends Model
         'ville',
         'pays',
         'description_besoin',
+        'categorie',
+        'sous_type',
+        'dimensions',
+        'finition',
+        'vitrage',
+        'options',
+        'estimation_min',
+        'estimation_max',
+        'devise',
+        'source',
         'statut',
     ];
 
     protected $casts = [
+        'dimensions' => 'array',
+        'options' => 'array',
+        'estimation_min' => 'integer',
+        'estimation_max' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

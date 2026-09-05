@@ -56,6 +56,8 @@ class Login extends BaseLogin
 
             if (! $user->verifyTwoFactorCode($code)) {
                 $this->requiresTwoFactor = true;
+                Filament::auth()->logout();
+                session()->regenerateToken();
 
                 throw ValidationException::withMessages([
                     'data.two_factor_code' => 'Le code de vérification 2FA est requis ou invalide.',

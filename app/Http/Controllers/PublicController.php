@@ -4,16 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePublicContactRequest;
 use App\Http\Requests\StorePublicDevisRequest;
+use App\Models\ContactMessage;
 use App\Models\Projet;
 use App\Models\PublicDevis;
+use App\ReviewData;
+use App\Services\ContactMessageWhatsAppNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class PublicController extends Controller
 {
+    public function __construct(private ContactMessageWhatsAppNotifier $whatsappNotifier) {}
+
     public function home()
     {
         $featuredProjects = collect();
+        $reviewsSummary = app(ReviewData::class)->summary();
 
         if (Schema::hasTable('projets')) {
             $featuredProjects = Projet::query()
@@ -23,7 +29,7 @@ class PublicController extends Controller
                 ->get();
         }
 
-        return view('public.home', compact('featuredProjects'));
+        return view('public.home', compact('featuredProjects', 'reviewsSummary'));
     }
 
     public function services()
@@ -92,19 +98,26 @@ class PublicController extends Controller
 
     public function showQuoteForm()
     {
-        return view('public.devis');
+        return view('public.devis', ['quoteConfig' => $this->quoteConfig()]);
     }
 
     public function storeQuote(StorePublicDevisRequest $request)
     {
-        PublicDevis::create([
-            'nom' => $request->input('nom'),
-            'telephone' => $request->input('telephone'),
-            'ville' => $request->input('ville'),
-            'pays' => $request->input('pays', 'Togo'),
-            'description_besoin' => $request->input('description_besoin'),
-            'statut' => 'nouvelle',
-        ]);
+        $this->persistQuote($request);
+
+        return redirect()->route('public.devis')->with('success', 'Votre demande de devis a bien été enregistrée. Notre équipe vous répondra très prochainement.');
+    }
+
+    public function storeQuoteApi(StorePublicDevisRequest $request)
+    {
+        $quote = $this->persistQuote($request);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Votre demande de devis a bien été enregistrée.',
+                'numero_demande' => $quote->numero_demande,
+            ], 201);
+        }
 
         return redirect()->route('public.devis')->with('success', 'Votre demande de devis a bien été enregistrée. Notre équipe vous répondra très prochainement.');
     }
@@ -116,9 +129,92 @@ class PublicController extends Controller
 
     public function storeContact(StorePublicContactRequest $request)
     {
-        $validated = $request->validated();
+        $message = ContactMessage::create($request->validated());
+        $this->whatsappNotifier->send($message);
 
         return redirect()->route('contact')->with('success', 'Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.');
+    }
+
+    private function persistQuote(StorePublicDevisRequest $request): PublicDevis
+    {
+        $validated = $request->validated();
+        $dimensions = is_array($validated['dimensions'] ?? null) ? $validated['dimensions'] : [];
+        $options = is_array($validated['options'] ?? null) ? $validated['options'] : [];
+        $estimation = $this->calculateEstimation($validated);
+
+        return PublicDevis::create([
+            'nom' => $validated['nom'],
+            'telephone' => $validated['telephone'],
+            'ville' => $validated['ville'] ?? null,
+            'pays' => $validated['pays'] ?? 'Togo',
+            'description_besoin' => $validated['description_besoin'],
+            'categorie' => $validated['categorie'] ?? null,
+            'sous_type' => $validated['sous_type'] ?? null,
+            'dimensions' => $dimensions,
+            'finition' => $validated['finition'] ?? null,
+            'vitrage' => $validated['vitrage'] ?? null,
+            'options' => $options,
+            'estimation_min' => isset($estimation['min']) ? (int) round((float) $estimation['min']) : null,
+            'estimation_max' => isset($estimation['max']) ? (int) round((float) $estimation['max']) : null,
+            'devise' => $estimation['devise'] ?? 'FCFA',
+            'source' => $validated['source'] ?? 'simulateur',
+            'statut' => 'nouvelle',
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array{min: int, max: int, devise: string}
+     */
+    private function calculateEstimation(array $validated): array
+    {
+        $subtype = collect(config('pricing.subtypes.'.($validated['categorie'] ?? ''), []))
+            ->firstWhere('id', $validated['sous_type'] ?? null);
+        $dimensions = is_array($validated['dimensions'] ?? null) ? $validated['dimensions'] : [];
+
+        if ($subtype === null) {
+            return ['min' => 0, 'max' => 0, 'devise' => 'FCFA'];
+        }
+
+        $quantity = ($subtype['unit'] ?? null) === 'm²'
+            ? (float) ($dimensions['largeur'] ?? 0) * (float) ($dimensions['hauteur'] ?? 0)
+            : (float) ($dimensions['longueur'] ?? 0);
+        $finition = collect(config('pricing.finitions', []))->firstWhere('id', $validated['finition'] ?? null);
+        $vitrage = collect(config('pricing.vitrages', []))->firstWhere('id', $validated['vitrage'] ?? null);
+        $total = (float) $subtype['base'] * $quantity * (float) ($finition['multiplier'] ?? 1);
+
+        if ($subtype['hasGlazing'] ?? false) {
+            $total *= (float) ($vitrage['multiplier'] ?? 1);
+        }
+
+        foreach ($validated['options'] ?? [] as $optionId) {
+            $option = collect(config('pricing.options', []))->firstWhere('id', $optionId);
+
+            if ($option === null) {
+                continue;
+            }
+
+            $total += match ($option['type']) {
+                'flat' => (float) $option['value'],
+                'perUnit' => (float) $option['value'] * $quantity,
+                'percent' => $total * (float) $option['value'],
+                default => 0,
+            };
+        }
+
+        return [
+            'min' => (int) round($total * 0.85),
+            'max' => (int) round($total * 1.15),
+            'devise' => 'FCFA',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function quoteConfig(): array
+    {
+        return config('pricing');
     }
 
     /**
