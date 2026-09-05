@@ -29,7 +29,7 @@ class PublicController extends Controller
                 ->get();
         }
 
-        return view('public.home', compact('featuredProjects', 'reviewsSummary'));
+        return view('public.home', ['featuredProjects' => $featuredProjects, 'reviewSummary' => $reviewsSummary]);
     }
 
     public function services()
@@ -262,10 +262,10 @@ class PublicController extends Controller
             'mobilier-sur-mesure' => [
                 'slug' => 'mobilier-sur-mesure',
                 'title' => 'Mobilier sur mesure',
-                'summary' => 'Cuisines, comptoirs, банquettes, rangements et mobiliers commerciaux pensés pour optimiser les espaces et affirmer votre image de marque.',
+                'summary' => 'Cuisines, comptoirs, banquettes, rangements et mobiliers commerciaux pensés pour optimiser les espaces et affirmer votre image de marque.',
                 'highlights' => [
                     'Cuisines intégrées',
-                    'Comptoirs et reception',
+                    'Comptoirs et réception',
                     'Rangements modulaires',
                     'Finitions personnalisées',
                 ],
