@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ContactMessage;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -40,7 +41,17 @@ class ContactMessageWhatsAppNotifier
             $request = $request->withHeaders(['X-Webhook-Secret' => $secret]);
         }
 
-        $response = $request->post($webhookUrl, $payload);
+        try {
+            $response = $request->post($webhookUrl, $payload);
+        } catch (ConnectionException $exception) {
+            Log::warning('Le webhook WhatsApp est indisponible ; le message de contact a tout de même été enregistré.', [
+                'contact_message_id' => $message->id,
+                'webhook_host' => (string) parse_url($webhookUrl, PHP_URL_HOST),
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return;
+        }
 
         if ($response->failed()) {
             Log::error('Le webhook WhatsApp a refusé le message de contact.', [
