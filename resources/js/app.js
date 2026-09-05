@@ -553,19 +553,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
                         <span>Nom complet</span>
-                        <input type="text" name="nom" value="${state.nom}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Votre nom" />
+                        <input type="text" name="nom" value="${state.nom}" autocomplete="name" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Votre nom" />
                     </label>
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700">
                         <span>Téléphone</span>
-                        <input type="tel" name="telephone" value="${state.telephone}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
+                        <input type="tel" name="telephone" value="${state.telephone}" autocomplete="tel" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="+228 ..." />
                     </label>
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700">
                         <span>Ville</span>
-                        <input type="text" name="ville" value="${state.ville}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Lomé" />
+                        <input type="text" name="ville" value="${state.ville}" autocomplete="address-level2" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Lomé" />
                     </label>
                     <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
                         <span>Pays</span>
-                        <input type="text" name="pays" value="${state.pays}" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Togo" />
+                        <input type="text" name="pays" value="${state.pays}" autocomplete="country-name" required class="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-slate-900 focus:border-amber-400 focus:outline-none" placeholder="Togo" />
                     </label>
                 </div>
             </section>
@@ -624,8 +624,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateEstimatePanel();
 
         previousStepButton.classList.toggle('hidden', state.step === 0);
+        previousStepButton.classList.toggle('inline-flex', state.step !== 0);
         nextStepButton.classList.toggle('hidden', state.step === 4);
+        nextStepButton.classList.toggle('inline-flex', state.step !== 4);
         submitQuoteButton.classList.toggle('hidden', state.step !== 4);
+        submitQuoteButton.classList.toggle('inline-flex', state.step === 4);
         updateNavigationControls();
         previousStepButton.disabled = state.step === 0;
         nextStepButton.textContent = 'Suivant';
