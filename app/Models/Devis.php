@@ -55,6 +55,26 @@ class Devis extends Model
         });
     }
 
+    /**
+     * @return array<int, array{designation: string, description?: string, quantite: float|int, prix_unitaire: float|int, total?: float|int}>
+     */
+    public function billingLines(): array
+    {
+        $lines = is_array($this->lignes_facturation) ? array_values($this->lignes_facturation) : [];
+
+        if ($lines !== [] || (float) $this->montant_materiel <= 0) {
+            return $lines;
+        }
+
+        return [[
+            'designation' => 'Matériel / fournitures',
+            'description' => 'Montant matériel du devis',
+            'quantite' => 1,
+            'prix_unitaire' => (float) $this->montant_materiel,
+            'total' => (float) $this->montant_materiel,
+        ]];
+    }
+
     public function temoignages(): HasMany
     {
         return $this->hasMany(Temoignage::class);
