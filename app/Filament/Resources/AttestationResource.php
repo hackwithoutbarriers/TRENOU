@@ -45,7 +45,7 @@ class AttestationResource extends Resource
                             'attestation_travail' => 'Attestation de travail',
                         ])
                         ->default('attestation_travail')
-                        ->disabled()
+                        ->disabled(fn (string $operation): bool => $operation === 'edit')
                         ->dehydrated(),
                     Forms\Components\TextInput::make('apprenti_nom_prenom')
                         ->label('Nom et prénom')
@@ -55,7 +55,7 @@ class AttestationResource extends Resource
                         ->label('Photo de l’apprenti')
                         ->image()
                         ->avatar()
-                        ->disk('public')
+                        ->disk(config('filesystems.default'))
                         ->directory('attestations')
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                         ->maxSize(2048)

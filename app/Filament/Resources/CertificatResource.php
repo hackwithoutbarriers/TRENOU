@@ -39,6 +39,7 @@ class CertificatResource extends Resource
                     ->label('Numéro du certificat')
                     ->readOnly()
                     ->dehydrated(false)
+                    ->formatStateUsing(fn (?string $state, ?Attestation $record): string => $record?->documentNumber('CERT') ?? (string) $state)
                     ->visibleOn('edit'),
                 Forms\Components\Hidden::make('type_document')->default('certificat'),
                 Forms\Components\TextInput::make('apprenti_nom_prenom')
@@ -49,7 +50,7 @@ class CertificatResource extends Resource
                     ->label('Photo de l’apprenti')
                     ->image()
                     ->avatar()
-                    ->disk('public')
+                    ->disk(config('filesystems.default'))
                     ->directory('attestations')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                     ->maxSize(2048)
@@ -94,7 +95,7 @@ class CertificatResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('photo_profil')
                     ->label('Photo')
-                    ->disk('public')
+                    ->disk(config('filesystems.default'))
                     ->circular(),
                 Tables\Columns\TextColumn::make('numero_attestation')
                     ->label('N° certificat')
@@ -129,7 +130,6 @@ class CertificatResource extends Resource
     {
         return [
             'index' => Pages\ListCertificats::route('/'),
-            'create' => Pages\CreateCertificat::route('/create'),
             'edit' => Pages\EditCertificat::route('/{record}/edit'),
         ];
     }
