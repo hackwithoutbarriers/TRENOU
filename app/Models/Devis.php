@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class Devis extends Model
 {
     protected $fillable = [
-        'numero_devis',
         'client_nom',
         'client_telephone',
         'client_ville',
@@ -34,13 +36,22 @@ class Devis extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (self $devis) {
-            $devis->numero_devis = 'DEV-'.str_pad((string) ((int) self::query()->max('id') + 1), 5, '0', STR_PAD_LEFT);
+        static::creating(function (self $devis): void {
+            $reference = $devis->reference_publique ?: self::reservePublicReference();
+
+            $devis->reference_publique = $reference;
+            $devis->numero_devis ??= 'DEV-'.$reference;
         });
 
-        static::saving(function (self $devis) {
+        static::created(function (self $devis): void {
+            DB::table('devis_public_references')
+                ->where('reference_publique', $devis->reference_publique)
+                ->update(['devis_id' => $devis->getKey(), 'updated_at' => now()]);
+        });
+
+        static::saving(function (self $devis): void {
             $lignes = is_array($devis->lignes_facturation) ? $devis->lignes_facturation : [];
-            $totalPrestations = collect($lignes)->sum(function (array $ligne): float {
+            $totalPrestations = collect($lignes)->filter(fn (mixed $ligne): bool => is_array($ligne))->sum(function (array $ligne): float {
                 return (float) ($ligne['quantite'] ?? 0) * (float) ($ligne['prix_unitaire'] ?? 0);
             });
 
@@ -48,11 +59,41 @@ class Devis extends Model
             $devis->montant_total = $totalPrestations + (float) ($devis->montant_main_doeuvre ?? 0);
         });
 
-        static::updated(function (self $devis) {
+        static::updated(function (self $devis): void {
             if ($devis->wasChanged('statut') && $devis->statut === 'livre') {
                 $devis->sendReviewRequest();
             }
         });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'reference_publique';
+    }
+
+    public static function reservePublicReference(): string
+    {
+        for ($attempt = 0; $attempt < 100; $attempt++) {
+            $reference = (string) random_int(10000, 99999);
+
+            try {
+                DB::table('devis_public_references')->insert([
+                    'reference_publique' => $reference,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                return $reference;
+            } catch (QueryException $exception) {
+                if (! in_array((string) $exception->getCode(), ['23000', '23505'], true)) {
+                    throw $exception;
+                }
+            }
+        }
+
+        throw ValidationException::withMessages([
+            'reference_publique' => 'Toutes les références publiques disponibles sont épuisées.',
+        ]);
     }
 
     /**
@@ -60,7 +101,9 @@ class Devis extends Model
      */
     public function billingLines(): array
     {
-        $lines = is_array($this->lignes_facturation) ? array_values($this->lignes_facturation) : [];
+        $lines = is_array($this->lignes_facturation)
+            ? array_values(array_filter($this->lignes_facturation, fn (mixed $line): bool => is_array($line)))
+            : [];
 
         if ($lines !== [] || (float) $this->montant_materiel <= 0) {
             return $lines;
