@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Devis;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DevisSeeder extends Seeder
 {
@@ -71,10 +72,23 @@ class DevisSeeder extends Seeder
         ];
 
         foreach ($quotes as $quote) {
-            Devis::updateOrCreate(
+            $devis = Devis::query()->firstOrNew(
                 ['client_nom' => $quote['client_nom'], 'description_chantier' => $quote['description_chantier']],
-                $quote
             );
+
+            $quote['montant_total'] = $quote['montant_materiel'] + $quote['montant_main_doeuvre'];
+            $devis->fill($quote);
+
+            if (! $devis->reference_publique) {
+                $devis->reference_publique = Devis::reservePublicReference();
+                $devis->numero_devis = 'DEV-'.$devis->reference_publique;
+            }
+
+            $devis->saveQuietly();
+
+            DB::table('devis_public_references')
+                ->where('reference_publique', $devis->reference_publique)
+                ->update(['devis_id' => $devis->getKey(), 'updated_at' => now()]);
         }
     }
 }
