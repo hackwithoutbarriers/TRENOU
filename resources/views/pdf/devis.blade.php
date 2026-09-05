@@ -149,7 +149,6 @@
                     @php $totalLigne = (float) ($ligne['quantite'] ?? 0) * (float) ($ligne['prix_unitaire'] ?? 0); @endphp
                     <tr><td class="index">{{ $loop->iteration }}</td><td class="designation"><strong>{{ $ligne['designation'] ?? 'Prestation' }}</strong><small>{{ $ligne['description'] ?? '—' }}</small></td><td class="quantity">{{ $ligne['quantite'] ?? 0 }}</td><td class="amount">{{ number_format((float) ($ligne['prix_unitaire'] ?? 0), 0, ',', ' ') }} FCFA</td><td class="amount">{{ number_format($totalLigne, 0, ',', ' ') }} FCFA</td></tr>
                 @endforeach
-                <tr><td class="index">{{ count($lignes) + 1 }}</td><td class="designation">Main-d’œuvre</td><td class="quantity">1</td><td class="amount">{{ number_format($mainDoeuvre, 0, ',', ' ') }} FCFA</td><td class="amount">{{ number_format($mainDoeuvre, 0, ',', ' ') }} FCFA</td></tr>
                 @for ($row = 0; $row < max(0, 8 - count($lignes)); $row++)
                     <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
                 @endfor
