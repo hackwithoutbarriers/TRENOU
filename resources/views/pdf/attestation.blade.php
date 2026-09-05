@@ -484,7 +484,7 @@
 
                             <div class="details-box">
                                 <div class="details-row main">
-                                    <span class="details-label">Nom &amp; Prénoms</span>
+                                 <!--   <span class="details-label">Nom &amp; Prénoms</span>*/-->
                                     <span class="details-value name">{{ $attestation->apprenti_nom_prenom }}</span>
                                 </div>
                                 <div class="details-grid">
