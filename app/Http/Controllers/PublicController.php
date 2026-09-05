@@ -8,11 +8,14 @@ use App\Models\ContactMessage;
 use App\Models\Projet;
 use App\Models\PublicDevis;
 use App\ReviewData;
+use App\Services\ContactMessageWhatsAppNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class PublicController extends Controller
 {
+    public function __construct(private ContactMessageWhatsAppNotifier $whatsappNotifier) {}
+
     public function home()
     {
         $featuredProjects = collect();
@@ -126,7 +129,8 @@ class PublicController extends Controller
 
     public function storeContact(StorePublicContactRequest $request)
     {
-        ContactMessage::create($request->validated());
+        $message = ContactMessage::create($request->validated());
+        $this->whatsappNotifier->send($message);
 
         return redirect()->route('contact')->with('success', 'Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.');
     }

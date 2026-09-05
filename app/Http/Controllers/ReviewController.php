@@ -35,7 +35,10 @@ class ReviewController extends Controller
         $relativePath = null;
 
         if ($request->hasFile('photo_projet')) {
-            $relativePath = $request->file('photo_projet')->store('temoignages', 'public');
+            $relativePath = $request->file('photo_projet')->store(
+                'temoignages',
+                config('filesystems.default'),
+            );
         }
 
         $devis = null;

@@ -2,16 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\GenerateDocumentLinksAction;
 use App\Models\Attestation;
 use App\Models\Devis;
 use App\Models\User;
 use App\Services\PdfDocumentService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PdfController extends Controller
 {
     public function __construct(protected PdfDocumentService $pdfDocumentService) {}
+
+    public function documentLinks(Attestation $attestation, GenerateDocumentLinksAction $linksAction): View
+    {
+        $this->ensureApprovedUser();
+
+        return view('pdf.document-links', [
+            'attestation' => $attestation,
+            'links' => $linksAction->handle($attestation),
+        ]);
+    }
 
     public function devis(Devis $devis): Response
     {

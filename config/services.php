@@ -37,6 +37,8 @@ return [
 
     'whatsapp' => [
         'number' => env('WHATSAPP_NUMBER', '22890585976'),
+        'webhook_url' => env('WHATSAPP_WEBHOOK_URL'),
+        'webhook_secret' => env('WHATSAPP_WEBHOOK_SECRET'),
     ],
 
     'google' => [

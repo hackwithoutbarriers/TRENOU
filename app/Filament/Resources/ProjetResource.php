@@ -67,7 +67,7 @@ class ProjetResource extends Resource
                             ->unique(ignoreRecord: true),
                         Forms\Components\FileUpload::make('images')
                             ->label('Photos du projet')
-                            ->disk('public')
+                            ->disk(config('filesystems.default'))
                             ->directory('projets')
                             ->multiple()
                             ->image()

@@ -25,7 +25,7 @@ class AttestationResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('type_document', 'attestation_travail');
+        return parent::getEloquentQuery();
     }
 
     public static function form(Form $form): Form
@@ -33,23 +33,41 @@ class AttestationResource extends Resource
         return $form
             ->schema([
                 Section::make('Document')->schema([
+                    Forms\Components\Select::make('document_mode')
+                        ->label('Nature de la demande')
+                        ->options([
+                            'nouveau' => 'Nouveau document',
+                            'duplicata' => 'Duplicata',
+                        ])
+                        ->default('nouveau')
+                        ->live()
+                        ->dehydrated(false)
+                        ->required()
+                        ->visibleOn('create'),
+                    Forms\Components\Select::make('source_document_id')
+                        ->label('Document original')
+                        ->options(fn (): array => Attestation::query()
+                            ->orderByDesc('id')
+                            ->get()
+                            ->mapWithKeys(fn (Attestation $record): array => [
+                                $record->id => $record->apprenti_nom_prenom.' — '.$record->documentNumber('CERT'),
+                            ])
+                            ->all())
+                        ->searchable()
+                        ->live()
+                        ->dehydrated(false)
+                        ->required(fn (Get $get): bool => $get('document_mode') === 'duplicata')
+                        ->visible(fn (Get $get): bool => $get('document_mode') === 'duplicata'),
                     Forms\Components\TextInput::make('numero_attestation')
-                        ->label('Numéro d’attestation')
+                        ->label('Numéro de série')
                         ->readOnly()
                         ->dehydrated(false)
                         ->visibleOn('edit'),
-                    Forms\Components\Select::make('type_document')
-                        ->label('Type de document')
-                        ->options([
-                            'certificat' => 'Certificat de fin d’apprentissage',
-                            'attestation_travail' => 'Attestation de travail',
-                        ])
-                        ->default('attestation_travail')
-                        ->disabled(fn (string $operation): bool => $operation === 'edit')
-                        ->dehydrated(),
+                    Forms\Components\Hidden::make('type_document')->default('certificat'),
                     Forms\Components\TextInput::make('apprenti_nom_prenom')
                         ->label('Nom et prénom')
                         ->required()
+                        ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
                         ->maxLength(255),
                     Forms\Components\FileUpload::make('photo_profil')
                         ->label('Photo de l’apprenti')
@@ -65,35 +83,38 @@ class AttestationResource extends Resource
                         ->imageResizeMode('force')
                         ->imageResizeTargetWidth(600)
                         ->imageResizeTargetHeight(600)
-                        ->visible(fn (Get $get): bool => $get('type_document') === 'certificat'),
+                        ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata'),
                     Forms\Components\Grid::make(['default' => 1, 'md' => 3])->schema([
                         Forms\Components\DatePicker::make('date_naissance')
                             ->label('Date de naissance')
-                            ->visible(fn (Get $get): bool => $get('type_document') === 'certificat')
-                            ->required(fn (Get $get): bool => $get('type_document') === 'certificat'),
+                            ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
+                            ->required(fn (Get $get): bool => $get('document_mode') !== 'duplicata'),
                         Forms\Components\TextInput::make('lieu_naissance')
                             ->label('Lieu de naissance')
-                            ->visible(fn (Get $get): bool => $get('type_document') === 'certificat')
-                            ->required(fn (Get $get): bool => $get('type_document') === 'certificat')
+                            ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
+                            ->required(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('nationalite')
                             ->label('Nationalité')
                             ->default('Togolaise')
-                            ->visible(fn (Get $get): bool => $get('type_document') === 'certificat')
-                            ->required(fn (Get $get): bool => $get('type_document') === 'certificat')
+                            ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
+                            ->required(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
                             ->maxLength(255),
                     ]),
                     Forms\Components\Grid::make(['default' => 1, 'md' => 2])->schema([
                         Forms\Components\DatePicker::make('date_debut_apprentissage')
                             ->label('Date de début de travail / apprentissage')
-                            ->required(),
+                            ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
+                            ->required(fn (Get $get): bool => $get('document_mode') !== 'duplicata'),
                         Forms\Components\DatePicker::make('date_fin_apprentissage')
                             ->label('Date de fin de travail / apprentissage')
-                            ->required(),
+                            ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
+                            ->required(fn (Get $get): bool => $get('document_mode') !== 'duplicata'),
                     ]),
                     Forms\Components\DatePicker::make('date_delivrance')
                         ->label('Date de délivrance')
-                        ->required(),
+                        ->visible(fn (Get $get): bool => $get('document_mode') !== 'duplicata')
+                        ->required(fn (Get $get): bool => $get('document_mode') !== 'duplicata'),
                 ]),
             ]);
     }
@@ -103,13 +124,17 @@ class AttestationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('numero_attestation')
-                    ->label('N° attestation')
+                    ->label('N° série')
+                    ->formatStateUsing(fn (?string $state, Attestation $record): string => $record->serialNumber())
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('apprenti_nom_prenom')
                     ->label('Apprenti')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('type_document')
+                    ->label('Documents')
+                    ->formatStateUsing(fn (?string $state): string => $state === 'certificat' ? 'Certificat + attestation' : 'Attestation'),
                 Tables\Columns\TextColumn::make('date_debut_apprentissage')
                     ->label('Début')
                     ->date()
@@ -125,17 +150,10 @@ class AttestationResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Tables\Actions\Action::make('telecharger_pdf')
-                    ->label('Attestation de travail')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Attestation $record): string => route('attestation.pdf', ['attestation' => $record]))
-                    ->visible(fn (Attestation $record): bool => $record->type_document === 'attestation_travail')
-                    ->openUrlInNewTab(),
-                Tables\Actions\Action::make('telecharger_certificat')
-                    ->label('Certificat de fin d’apprentissage')
-                    ->icon('heroicon-o-academic-cap')
-                    ->url(fn (Attestation $record): string => route('certificat.pdf', ['attestation' => $record]))
-                    ->visible(fn (Attestation $record): bool => $record->type_document === 'certificat')
+                Tables\Actions\Action::make('generer_documents')
+                    ->label('Générer les documents')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->url(fn (Attestation $record): string => route('documents.links', ['attestation' => $record]))
                     ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
             ])
