@@ -97,7 +97,7 @@
 </head>
 <body>
     @php
-        $lignes = is_array($devis->lignes_facturation) ? $devis->lignes_facturation : [];
+        $lignes = $devis->billingLines();
         $materiel = collect($lignes)->sum(fn (array $ligne): float => (float) ($ligne['quantite'] ?? 0) * (float) ($ligne['prix_unitaire'] ?? 0));
         $mainDoeuvre = (float) $devis->montant_main_doeuvre;
         $montantTotal = (float) $devis->montant_total;
