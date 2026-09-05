@@ -197,15 +197,27 @@
     </style>
 </head>
 @php
-    $photoRelativePath = (string) $attestation->photo_profil;
+    $photoValue = trim((string) $attestation->photo_profil);
     $photoDataUri = null;
-    if (preg_match('/\A[a-zA-Z0-9][a-zA-Z0-9\/_-]*\.(?:jpg|jpeg|png|webp)\z/i', $photoRelativePath)) {
-        $photoDisk = Storage::disk(config('filesystems.default'));
-        if ($photoDisk->exists($photoRelativePath)) {
-            $photoContents = $photoDisk->get($photoRelativePath);
-            $photoMimeType = $photoDisk->mimeType($photoRelativePath) ?: 'application/octet-stream';
-            $photoDataUri = 'data:'.$photoMimeType.';base64,'.base64_encode($photoContents);
+
+    $photoPaths = [$photoValue, ltrim($photoValue, '/')];
+    if (filter_var($photoValue, FILTER_VALIDATE_URL)) {
+        $photoPaths[] = rawurldecode(ltrim((string) parse_url($photoValue, PHP_URL_PATH), '/'));
+    }
+
+    $photoDisk = Storage::disk(config('filesystems.default'));
+    foreach ($photoPaths as $photoPath) {
+        $photoRelativePath = preg_replace('/\Astorage\//', '', $photoPath) ?: $photoPath;
+
+        if (! preg_match('/\A[a-zA-Z0-9][a-zA-Z0-9\/_.-]*\.(?:jpg|jpeg|png|webp)\z/i', $photoRelativePath)
+            || ! $photoDisk->exists($photoRelativePath)) {
+            continue;
         }
+
+        $photoContents = $photoDisk->get($photoRelativePath);
+        $photoMimeType = $photoDisk->mimeType($photoRelativePath) ?: 'application/octet-stream';
+        $photoDataUri = 'data:'.$photoMimeType.';base64,'.base64_encode($photoContents);
+        break;
     }
 @endphp
 <body>
