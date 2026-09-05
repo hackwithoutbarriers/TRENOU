@@ -4,7 +4,9 @@ namespace App\Filament\Pages\Auth;
 
 use App\Models\User;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
@@ -88,6 +90,47 @@ class Login extends BaseLogin
                     ->extraInputAttributes(['inputmode' => 'numeric']),
                 $this->getRememberFormComponent(),
             ]);
+    }
+
+    protected function getEmailFormComponent(): TextInput
+    {
+        return TextInput::make('email')
+            ->label('Adresse e-mail')
+            ->email()
+            ->required()
+            ->autocomplete('email')
+            ->autofocus();
+    }
+
+    protected function getPasswordFormComponent(): TextInput
+    {
+        return TextInput::make('password')
+            ->label('Mot de passe')
+            ->password()
+            ->revealable(false)
+            ->required()
+            ->autocomplete('current-password');
+    }
+
+    protected function getRememberFormComponent(): Checkbox
+    {
+        return Checkbox::make('remember')
+            ->label('Se souvenir de moi');
+    }
+
+    public function registerAction(): Action
+    {
+        return Action::make('register')
+            ->link()
+            ->label('Créer un compte artisan')
+            ->url(filament()->getRegistrationUrl());
+    }
+
+    protected function getAuthenticateFormAction(): Action
+    {
+        return Action::make('authenticate')
+            ->label('Se connecter')
+            ->submit('authenticate');
     }
 
     public function getTitle(): string
