@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Attestation de Travail {{ $serialNumber ?? $attestation->documentNumber('ATT') }}</title>
+    <title>Attestation de Travail <?php echo e($serialNumber ?? $attestation->documentNumber('ATT')); ?></title>
     <style>
         @page { size: A4; margin: 0; }
 
@@ -24,22 +24,22 @@
 
         @font-face {
             font-family: 'Roboto';
-            src: url('{{ public_path('fonts/roboto/Roboto-Regular.ttf') }}') format('truetype');
+            src: url('<?php echo e(public_path('fonts/roboto/Roboto-Regular.ttf')); ?>') format('truetype');
             font-weight: 400;
         }
         @font-face {
             font-family: 'Roboto';
-            src: url('{{ public_path('fonts/roboto/Roboto-Medium.ttf') }}') format('truetype');
+            src: url('<?php echo e(public_path('fonts/roboto/Roboto-Medium.ttf')); ?>') format('truetype');
             font-weight: 500;
         }
         @font-face {
             font-family: 'Roboto';
-            src: url('{{ public_path('fonts/roboto/Roboto-SemiBold.ttf') }}') format('truetype');
+            src: url('<?php echo e(public_path('fonts/roboto/Roboto-SemiBold.ttf')); ?>') format('truetype');
             font-weight: 600;
         }
         @font-face {
             font-family: 'Roboto';
-            src: url('{{ public_path('fonts/roboto/Roboto-Bold.ttf') }}') format('truetype');
+            src: url('<?php echo e(public_path('fonts/roboto/Roboto-Bold.ttf')); ?>') format('truetype');
             font-weight: 700;
         }
 
@@ -419,7 +419,7 @@
     </style>
 </head>
 <body>
-    @php
+    <?php
         // Capitalise le mois d'une date Carbon en français ("janvier" -> "Janvier")
         $frDate = function ($date) {
             $mois = $date->translatedFormat('F');
@@ -442,7 +442,7 @@
         $dureeUnite = $dureeEstEnMois
             ? 'mois'
             : ($dureeAnnees === 1 ? 'an' : 'ans');
-    @endphp
+    ?>
 
     <div class="page">
         <div class="frame">
@@ -453,19 +453,20 @@
 
             <div class="inner">
 
-                <img class="watermark" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="">
+                <img class="watermark" src="<?php echo e(public_path('images/logo/alu-la-solution-compact.png')); ?>" alt="">
                 <div class="watermark-pattern"></div>
 
-                <div class="ref-line">Réf. N° <strong>{{ $serialNumber ?? $attestation->documentNumber('ATT') }}</strong></div>
+                <div class="ref-line">Réf. N° <strong><?php echo e($serialNumber ?? $attestation->documentNumber('ATT')); ?></strong></div>
 
                 <div class="header">
-                    <img class="logo" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="Logo {{ config('business.name') }}">
+                    <img class="logo" src="<?php echo e(public_path('images/logo/alu-la-solution-compact.png')); ?>" alt="Logo <?php echo e(config('business.name')); ?>">
                     <div class="company">
-                        <div class="company-name">{{ config('business.name') }}</div>
-                        <div class="company-activity">{{ config('business.activities') }}</div>
+                        <div class="company-name"><?php echo e(config('business.name')); ?></div>
+                        <div class="company-activity"><?php echo e(config('business.activities')); ?></div>
                         <div class="contact">
-                            {{ config('business.address') }} — Tél. : {{ config('business.phone') }}<br>
-                            E-mail : {{ config('business.email') }}
+                            <?php echo e(config('business.address')); ?> — Tél. : <?php echo e(config('business.phone')); ?><br>
+                            E-mail : <?php echo e(config('business.email')); ?>
+
                         </div>
                     </div>
                 </div>
@@ -479,21 +480,21 @@
                             <div class="title-rule"></div>
                         </div>
                         <div class="body">
-                            <p class="lead">Je soussigné Monsieur <strong>{{ config('business.manager') }}</strong>, {{ config('business.manager_title') }}, Directeur de l'Etablissement <strong>{{ config('business.name') }}</strong>, atteste par la présente que :</p>
+                            <p class="lead">Je soussigné Monsieur <strong><?php echo e(config('business.manager')); ?></strong>, <?php echo e(config('business.manager_title')); ?>, Directeur de l'Etablissement <strong><?php echo e(config('business.name')); ?></strong>, atteste par la présente que :</p>
 
                             <div class="details-box">
                                 <div class="details-row main">
                                     <span class="details-label">Nom &amp; Prénoms</span>
-                                    <span class="details-value name">{{ $attestation->apprenti_nom_prenom }}</span>
+                                    <span class="details-value name"><?php echo e($attestation->apprenti_nom_prenom); ?></span>
                                 </div>
                                 <div class="details-grid">
                                     <div class="details-cell">
                                         <span class="details-label">Période de formation</span>
-                                        <span class="details-value">{{ $frDate($attestation->date_debut_apprentissage) }} au {{ $frDate($attestation->date_fin_apprentissage) }}</span>
+                                        <span class="details-value"><?php echo e($frDate($attestation->date_debut_apprentissage)); ?> au <?php echo e($frDate($attestation->date_fin_apprentissage)); ?></span>
                                     </div>
                                     <div class="details-cell">
                                         <span class="details-label">Durée</span>
-                                        <span class="details-value">{{ $dureeLettres }} ({{ sprintf('%02d', $dureeValeur) }} {{ $dureeUnite }})</span>
+                                        <span class="details-value"><?php echo e($dureeLettres); ?> (<?php echo e(sprintf('%02d', $dureeValeur)); ?> <?php echo e($dureeUnite); ?>)</span>
                                     </div>
                                 </div>
                             </div>
@@ -507,21 +508,21 @@
                 <div class="closing-row">
                     <div class="place-date">
                         <span class="place-date-label">Fait à Lomé, le</span>
-                        <span class="place-date-value">{{ $frDate($attestation->date_delivrance) }}</span>
+                        <span class="place-date-value"><?php echo e($frDate($attestation->date_delivrance)); ?></span>
                     </div>
 
                     <div class="signature-block">
                         <div class="signature-title">Le Directeur</div>
-                        @if(config('business.signature_image'))
-                            <img class="signature-img" src="{{ public_path(config('business.signature_image')) }}" alt="Signature">
-                        @endif
-                        <div class="signature-name">{{ config('business.manager') }}</div>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(config('business.signature_image')): ?>
+                            <img class="signature-img" src="<?php echo e(public_path(config('business.signature_image'))); ?>" alt="Signature">
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <div class="signature-name"><?php echo e(config('business.manager')); ?></div>
                         <div class="stamp">
-                            @if(config('business.stamp_image'))
-                                <img src="{{ public_path(config('business.stamp_image')) }}" alt="Cachet">
-                            @else
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(config('business.stamp_image')): ?>
+                                <img src="<?php echo e(public_path(config('business.stamp_image'))); ?>" alt="Cachet">
+                            <?php else: ?>
                                 <div class="stamp-placeholder">ETS ALU<br>LA SOLUTION<br>Cachet officiel</div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -534,4 +535,4 @@
         </div>
     </div>
 </body>
-</html>
+</html><?php /**PATH C:\Users\HWB\Desktop\TRENOU\resources\views/pdf/attestation.blade.php ENDPATH**/ ?>

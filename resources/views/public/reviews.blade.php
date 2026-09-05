@@ -122,7 +122,7 @@
                     <article class="w-[320px] shrink-0 overflow-hidden rounded-[30px] border border-stone-200 bg-white shadow-[0_20px_40px_-28px_rgba(15,23,42,0.45)]">
                         @if (! empty($review['photo']))
                             <div class="relative">
-                                <img src="{{ asset($review['photo']) }}" alt="Projet de {{ $review['author'] }}" class="h-48 w-full object-cover">
+                                <img src="{{ $review['photo'] }}" alt="Projet de {{ $review['author'] }}" class="h-48 w-full object-cover">
                                 @if (($review['verified'] ?? false) || ($review['source'] ?? '') === 'interne')
                                     <span class="absolute right-3 top-3 inline-flex rounded-full border border-emerald-300 bg-emerald-500/90 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-white shadow-sm">Client vérifié</span>
                                 @endif
@@ -160,7 +160,7 @@
                 <article class="group overflow-hidden rounded-[30px] border border-stone-200 bg-white shadow-[0_20px_40px_-28px_rgba(15,23,42,0.45)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_26px_50px_-24px_rgba(15,23,42,0.6)]">
                     @if (! empty($review['photo']))
                         <div class="relative">
-                            <img src="{{ asset($review['photo']) }}" alt="Projet de {{ $review['author'] }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
+                            <img src="{{ $review['photo'] }}" alt="Projet de {{ $review['author'] }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
                             <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/55 to-transparent"></div>
                             @if (($review['verified'] ?? false) || ($review['source'] ?? '') === 'interne')
                                 <span class="absolute right-4 top-4 inline-flex rounded-full border border-emerald-300 bg-emerald-500/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white shadow-sm">Client vérifié</span>

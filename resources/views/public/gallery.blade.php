@@ -62,7 +62,7 @@
                     @php $projectImages = is_array($project->images) ? $project->images : []; @endphp
                     <article class="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
                         @if (!empty($projectImages))
-                            @php $projectImageUrl = preg_match('/^https?:\/\//', $projectImages[0]) ? $projectImages[0] : Storage::disk('public')->url($projectImages[0]); @endphp
+                            @php $projectImageUrl = preg_match('/^https?:\/\//', $projectImages[0]) ? $projectImages[0] : Storage::disk(config('filesystems.default'))->url($projectImages[0]); @endphp
                             <img src="{{ $projectImageUrl }}" alt="{{ $project->titre }}" loading="lazy" class="aspect-[4/3] h-auto w-full object-cover" />
                         @else
                             <div class="flex h-64 items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-sm font-semibold text-slate-700">

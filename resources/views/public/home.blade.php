@@ -183,7 +183,7 @@
                         @php $images = is_array($project->images) ? $project->images : []; @endphp
                         <article class="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
                             @if (!empty($images))
-                                @php $imageUrl = preg_match('/^https?:\/\//', $images[0]) ? $images[0] : Storage::disk('public')->url($images[0]); @endphp
+                                @php $imageUrl = preg_match('/^https?:\/\//', $images[0]) ? $images[0] : Storage::disk(config('filesystems.default'))->url($images[0]); @endphp
                                 <img src="{{ $imageUrl }}" alt="{{ $project->titre }}" loading="lazy" class="h-52 w-full object-cover" />
                             @else
                                 <div class="flex h-52 items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-sm font-semibold text-slate-700">

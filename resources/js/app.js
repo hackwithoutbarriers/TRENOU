@@ -268,6 +268,38 @@ document.addEventListener('DOMContentLoaded', () => {
         estimateMeta.textContent = 'Fourchette indicative. Le devis définitif est confirmé après visite technique.';
     };
 
+    const updateChoiceStates = () => {
+        panels.querySelectorAll('[data-finition-button], [data-vitrage-button]').forEach((button) => {
+            const isSelected = button.dataset.finitionButton === state.finition || button.dataset.vitrageButton === state.vitrage;
+
+            button.classList.toggle('border-amber-400', isSelected);
+            button.classList.toggle('bg-amber-50', isSelected);
+            button.classList.toggle('text-slate-900', isSelected);
+            button.classList.toggle('border-stone-200', !isSelected);
+            button.classList.toggle('bg-white', !isSelected);
+            button.classList.toggle('text-slate-600', !isSelected);
+            button.setAttribute('aria-pressed', String(isSelected));
+        });
+
+        panels.querySelectorAll('[data-option-toggle]').forEach((input) => {
+            input.closest('label')?.classList.toggle('border-amber-400', input.checked);
+            input.closest('label')?.classList.toggle('bg-amber-50', input.checked);
+        });
+    };
+
+    const updateDimensionSummary = () => {
+        const subtype = getSubtype();
+        const quantityElement = panels.querySelector('[data-dimension-summary]');
+
+        if (quantityElement) {
+            quantityElement.textContent = getEstimatedQuantity() > 0
+                ? `Quantité retenue : ${getEstimatedQuantity().toFixed(2)} ${subtype?.unit || ''}`
+                : 'Saisissez des dimensions supérieures à zéro pour obtenir une estimation.';
+            quantityElement.classList.toggle('text-amber-700', getEstimatedQuantity() > 0);
+            quantityElement.classList.toggle('text-slate-500', getEstimatedQuantity() <= 0);
+        }
+    };
+
     const canAdvance = () => {
         if (state.step === 0) {
             return Boolean(state.categorie);
@@ -399,21 +431,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mt-5 ${subtype?.unit === 'm²' ? 'grid gap-4 sm:grid-cols-2' : 'max-w-md'}">
                     ${subtype?.unit === 'm²' ? `
                         <label for="dimension-largeur" class="flex w-full flex-col gap-2 text-sm font-medium text-slate-700">
-                            <span>Largeur (m)</span>
-                            <input id="dimension-largeur" type="number" min="0" step="0.1" inputmode="decimal" data-dimension="largeur" value="${state.dimensions.largeur}" required class="w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" />
+                        <span>Largeur <span class="font-normal text-slate-400">(m)</span></span>
+                        <input id="dimension-largeur" type="number" min="0" step="0.1" inputmode="decimal" autocomplete="off" data-dimension="largeur" value="${state.dimensions.largeur}" required class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3.5 text-base text-slate-900 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Ex. 1,20" />
                         </label>
                         <label for="dimension-hauteur" class="flex w-full flex-col gap-2 text-sm font-medium text-slate-700">
-                            <span>Hauteur (m)</span>
-                            <input id="dimension-hauteur" type="number" min="0" step="0.1" inputmode="decimal" data-dimension="hauteur" value="${state.dimensions.hauteur}" required class="w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" />
+                        <span>Hauteur <span class="font-normal text-slate-400">(m)</span></span>
+                        <input id="dimension-hauteur" type="number" min="0" step="0.1" inputmode="decimal" autocomplete="off" data-dimension="hauteur" value="${state.dimensions.hauteur}" required class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3.5 text-base text-slate-900 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Ex. 2,10" />
                         </label>
                     ` : `
                         <label for="dimension-longueur" class="flex w-full max-w-xs flex-col gap-2 text-sm font-medium text-slate-700">
-                            <span>Longueur (ml)</span>
-                            <input id="dimension-longueur" type="number" min="0" step="0.1" inputmode="decimal" data-dimension="longueur" value="${state.dimensions.longueur}" required class="w-full rounded-xl border border-stone-200 bg-white px-3 py-3 text-slate-900 focus:border-amber-400 focus:outline-none" />
+                        <span>Longueur <span class="font-normal text-slate-400">(ml)</span></span>
+                        <input id="dimension-longueur" type="number" min="0" step="0.1" inputmode="decimal" autocomplete="off" data-dimension="longueur" value="${state.dimensions.longueur}" required class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3.5 text-base text-slate-900 shadow-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Ex. 4,50" />
                         </label>
                     `}
                 </div>
-                ${getEstimatedQuantity() > 0 ? `<p class="mt-4 text-sm font-medium text-amber-700">Quantité retenue : ${getEstimatedQuantity().toFixed(2)} ${subtype?.unit || ''}</p>` : ''}
+                <p data-dimension-summary class="mt-4 text-sm font-medium ${getEstimatedQuantity() > 0 ? 'text-amber-700' : 'text-slate-500'}">${getEstimatedQuantity() > 0 ? `Quantité retenue : ${getEstimatedQuantity().toFixed(2)} ${subtype?.unit || ''}` : 'Saisissez des dimensions supérieures à zéro pour obtenir une estimation.'}</p>
             </section>
         `;
 
@@ -423,6 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.dimensions[field] = event.target.value;
                 syncFormValues();
                 updateEstimatePanel();
+                updateDimensionSummary();
                 updateNavigationControls();
                 validationMessage.classList.add('hidden');
             });
@@ -441,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Finition</p>
                     <div class="flex flex-wrap gap-2">
                         ${config.finitions.map((finition) => `
-                            <button type="button" data-finition-button="${finition.id}" class="rounded-full border px-3 py-2 text-sm font-medium transition ${state.finition === finition.id ? 'border-amber-400 bg-amber-50 text-slate-900' : 'border-stone-200 bg-white text-slate-600 hover:border-stone-300'}">
+                            <button type="button" data-finition-button="${finition.id}" aria-pressed="${state.finition === finition.id}" class="min-h-11 rounded-full border px-4 py-2 text-sm font-semibold transition ${state.finition === finition.id ? 'border-amber-400 bg-amber-50 text-slate-900' : 'border-stone-200 bg-white text-slate-600 hover:border-stone-300'}">
                                 ${finition.label}
                             </button>
                         `).join('')}
@@ -453,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Vitrage</p>
                         <div class="flex flex-wrap gap-2">
                             ${config.vitrages.map((vitrage) => `
-                                <button type="button" data-vitrage-button="${vitrage.id}" class="rounded-full border px-3 py-2 text-sm font-medium transition ${state.vitrage === vitrage.id ? 'border-amber-400 bg-amber-50 text-slate-900' : 'border-stone-200 bg-white text-slate-600 hover:border-stone-300'}">
+                                <button type="button" data-vitrage-button="${vitrage.id}" aria-pressed="${state.vitrage === vitrage.id}" class="min-h-11 rounded-full border px-4 py-2 text-sm font-semibold transition ${state.vitrage === vitrage.id ? 'border-amber-400 bg-amber-50 text-slate-900' : 'border-stone-200 bg-white text-slate-600 hover:border-stone-300'}">
                                     ${vitrage.label}
                                 </button>
                             `).join('')}
@@ -466,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="space-y-2">
                         ${config.options.map((option) => `
                             <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-stone-200 bg-white px-3 py-3 text-sm text-slate-700 ${state.options.includes(option.id) ? 'border-amber-400 bg-amber-50' : ''}">
-                                <input type="checkbox" data-option-toggle="${option.id}" ${state.options.includes(option.id) ? 'checked' : ''} class="h-4 w-4 accent-amber-500" />
+                                <input type="checkbox" data-option-toggle="${option.id}" ${state.options.includes(option.id) ? 'checked' : ''} class="h-5 w-5 accent-amber-500" />
                                 <span>${option.label}</span>
                             </label>
                         `).join('')}
@@ -479,7 +512,8 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', () => {
                 state.finition = button.dataset.finitionButton;
                 syncFormValues();
-                render();
+                updateEstimatePanel();
+                updateChoiceStates();
             });
         });
 
@@ -487,7 +521,8 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', () => {
                 state.vitrage = button.dataset.vitrageButton;
                 syncFormValues();
-                render();
+                updateEstimatePanel();
+                updateChoiceStates();
             });
         });
 
@@ -504,7 +539,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 state.options = [...selected];
                 syncFormValues();
-                render();
+                updateEstimatePanel();
+                updateChoiceStates();
             });
         });
     };
