@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Certificat de fin d’apprentissage {{ $attestation->numero_attestation }}</title>
+    <title>Certificat de fin d’apprentissage {{ $serialNumber ?? $attestation->documentNumber('CERT') }}</title>
     <style>
         @page { size: A4 landscape; margin: 0; }
         * { box-sizing: border-box; }
@@ -246,7 +246,7 @@
 
                 <img class="watermark" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="">
 
-                <div class="cert-number">N&deg; {{ $attestation->numero_attestation }}</div>
+                <div class="cert-number">N&deg; {{ $serialNumber ?? $attestation->documentNumber('CERT') }}</div>
 
                 <div class="header">
                     <div class="logo-frame">

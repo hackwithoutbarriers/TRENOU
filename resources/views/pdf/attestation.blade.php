@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Attestation de Travail {{ $attestation->numero_attestation }}</title>
+    <title>Attestation de Travail {{ $serialNumber ?? $attestation->documentNumber('ATT') }}</title>
     <style>
         @page { size: A4; margin: 0; }
 
@@ -456,7 +456,7 @@
                 <img class="watermark" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="">
                 <div class="watermark-pattern"></div>
 
-                <div class="ref-line">Réf. N° <strong>{{ $attestation->numero_attestation }}</strong></div>
+                <div class="ref-line">Réf. N° <strong>{{ $serialNumber ?? $attestation->documentNumber('ATT') }}</strong></div>
 
                 <div class="header">
                     <img class="logo" src="{{ public_path('images/logo/alu-la-solution-compact.png') }}" alt="Logo {{ config('business.name') }}">
