@@ -20,11 +20,6 @@ class UserResource extends Resource
 
     protected static ?string $navigationLabel = 'Demandes d’inscription';
 
-    public static function canViewAny(): bool
-    {
-        return (bool) auth()->user()?->is_superuser;
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -71,7 +66,7 @@ class UserResource extends Resource
                     ->label('Valider')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (User $record): bool => (bool) auth()->user()?->is_superuser && $record->status !== User::STATUS_APPROVED)
+                    ->visible(fn (User $record): bool => $record->status !== User::STATUS_APPROVED)
                     ->requiresConfirmation()
                     ->action(function (User $record) {
                         $record->update([
@@ -90,7 +85,7 @@ class UserResource extends Resource
                     ->label('Refuser')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (User $record): bool => (bool) auth()->user()?->is_superuser && $record->status !== User::STATUS_REJECTED)
+                    ->visible(fn (User $record): bool => $record->status !== User::STATUS_REJECTED)
                     ->requiresConfirmation()
                     ->action(function (User $record) {
                         $record->update([

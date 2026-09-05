@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
-use InvalidArgumentException;
+use Intervention\Image\Laravel\Facades\Image;
 
 class PortfolioImageOptimizer
 {
@@ -18,22 +16,16 @@ class PortfolioImageOptimizer
     public function optimize(array $paths): array
     {
         $optimized = [];
-        $diskName = (string) config('filesystems.default', 'public');
-        $disk = Storage::disk($diskName);
-        $imageManager = ImageManager::gd();
-        $canEncodeWebp = function_exists('imagewebp');
+        $disk = Storage::disk('public');
 
         foreach ($paths as $path) {
             if (blank($path)) {
                 continue;
             }
 
-            $this->ensureSafeRelativePath($path);
-            if (! $this->isSafeStoredPath($path)) {
-                throw new InvalidArgumentException('The portfolio image path is outside the public storage disk.');
-            }
+            $absolutePath = $disk->path($path);
 
-            if (! $disk->exists($path)) {
+            if (! file_exists($absolutePath)) {
                 $optimized[] = $path;
 
                 continue;
@@ -47,55 +39,24 @@ class PortfolioImageOptimizer
                 continue;
             }
 
-            if (! $canEncodeWebp) {
-                Log::warning('WebP encoding is unavailable; keeping the original portfolio image.', [
-                    'path' => $path,
-                ]);
-                $optimized[] = $path;
-
-                continue;
-            }
-
-            $sourcePath = tempnam(sys_get_temp_dir(), 'portfolio-source-');
-            $webpAbsolutePath = tempnam(sys_get_temp_dir(), 'portfolio-webp-');
-
-            if ($sourcePath === false || $webpAbsolutePath === false) {
-                throw new \RuntimeException('Impossible de créer les fichiers temporaires pour optimiser l’image.');
-            }
-
-            file_put_contents($sourcePath, $disk->get($path));
             $webpPath = preg_replace('/\.[^.]+$/', '.webp', $path);
+            $webpAbsolutePath = $disk->path($webpPath);
 
-            $imageManager->read($sourcePath)
-                ->resizeDown(1600, 1200)
-                ->toWebp(72)
+            Image::make($absolutePath)
+                ->resizeDown(1600, 1200, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                })
+                ->encode('webp', 72)
                 ->save($webpAbsolutePath);
 
-            $disk->put($webpPath, file_get_contents($webpAbsolutePath));
-
-            if ($path !== $webpPath) {
-                $disk->delete($path);
+            if ($path !== $webpPath && file_exists($absolutePath)) {
+                unlink($absolutePath);
             }
 
-            unlink($sourcePath);
-            unlink($webpAbsolutePath);
             $optimized[] = $webpPath;
         }
 
         return $optimized;
-    }
-
-    private function ensureSafeRelativePath(string $path): void
-    {
-        if ($path === '' || str_starts_with($path, '/') || str_starts_with($path, '\\') || preg_match('/\A[A-Za-z]:[\\\\\/]/', $path) || str_contains(str_replace('\\', '/', $path), '../')) {
-            throw new InvalidArgumentException('The portfolio image path must be relative to public storage.');
-        }
-    }
-
-    private function isSafeStoredPath(string $path): bool
-    {
-        return ! str_starts_with($path, '/')
-            && ! str_starts_with($path, '\\')
-            && ! preg_match('/\A[A-Za-z]:[\\\\\/]/', $path);
     }
 }

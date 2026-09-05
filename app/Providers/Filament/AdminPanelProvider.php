@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('TRENOU Artisan')
-            ->brandLogo(asset('images/logo/alu-la-solution-full.webp'))
+            ->brandLogo(asset('images/trenou-logo.svg'))
             ->login(Login::class)
             ->registration(Register::class)
             ->profile(EditProfile::class)

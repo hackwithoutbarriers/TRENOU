@@ -15,9 +15,9 @@ class EditAttestation extends EditRecord
     {
         return [
             Actions\Action::make('telecharger_pdf')
-                ->label('Générer les documents')
-                ->icon('heroicon-o-document-arrow-down')
-                ->url(fn (Attestation $record): string => route('documents.links', ['attestation' => $record]))
+                ->label('Télécharger PDF')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->url(fn (Attestation $record): string => route('attestation.pdf', ['attestation' => $record]))
                 ->openUrlInNewTab(),
             Actions\DeleteAction::make(),
         ];
