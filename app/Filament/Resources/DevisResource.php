@@ -177,7 +177,7 @@ class DevisResource extends Resource
             $basePath = '../../';
         }
 
-        $totalPrestations = collect(is_array($lines) ? $lines : [])->sum(
+        $totalPrestations = collect(is_array($lines) ? $lines : [])->filter(fn (mixed $line): bool => is_array($line))->sum(
             fn (array $line): float => (float) ($line['quantite'] ?? 0) * (float) ($line['prix_unitaire'] ?? 0)
         );
 
