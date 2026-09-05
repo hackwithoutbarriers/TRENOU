@@ -9,9 +9,21 @@ use Throwable;
 
 class PdfDocumentService
 {
-    public function downloadView(string $view, array $data, string $filename, string $paper = 'a4', string $orientation = 'portrait'): Response
-    {
+    public function downloadView(
+        string $view,
+        array $data,
+        string $filename,
+        string $paper = 'a4',
+        string $orientation = 'portrait',
+        ?string $cacheKey = null,
+    ): Response {
         set_time_limit((int) config('browsershot.php_execution_timeout', 0));
+
+        $cachePath = $cacheKey === null ? null : $this->cachePath($view, $cacheKey);
+
+        if ($cachePath !== null && is_file($cachePath) && filesize($cachePath) > 0) {
+            return response()->download($cachePath, $filename);
+        }
 
         $temporaryBasePath = tempnam(storage_path('app'), 'pdf-');
 
@@ -65,9 +77,39 @@ class PdfDocumentService
                 $browserShot->addChromiumArguments($chromiumArguments);
             }
 
-            $browserShot->save($targetPath);
+            if ($cachePath === null) {
+                $browserShot->save($targetPath);
 
-            return response()->download($targetPath, $filename)->deleteFileAfterSend(true);
+                return response()->download($targetPath, $filename)->deleteFileAfterSend(true);
+            }
+
+            $cacheDirectory = dirname($cachePath);
+            if (! is_dir($cacheDirectory) && ! mkdir($cacheDirectory, 0755, true) && ! is_dir($cacheDirectory)) {
+                throw new \RuntimeException('Impossible de créer le cache des PDF.');
+            }
+
+            $lockHandle = fopen($cachePath.'.lock', 'c+');
+            if ($lockHandle === false) {
+                throw new \RuntimeException('Impossible de verrouiller le cache des PDF.');
+            }
+
+            try {
+                if (! flock($lockHandle, LOCK_EX)) {
+                    throw new \RuntimeException('Impossible de verrouiller le cache des PDF.');
+                }
+
+                if (! is_file($cachePath) || filesize($cachePath) === 0) {
+                    $browserShot->save($targetPath);
+                    if (! rename($targetPath, $cachePath)) {
+                        throw new \RuntimeException('Impossible d’enregistrer le cache du PDF.');
+                    }
+                }
+            } finally {
+                flock($lockHandle, LOCK_UN);
+                fclose($lockHandle);
+            }
+
+            return response()->download($cachePath, $filename);
         } catch (Throwable $exception) {
             if (is_file($targetPath)) {
                 unlink($targetPath);
@@ -86,6 +128,14 @@ class PdfDocumentService
                 previous: $exception,
             );
         }
+    }
+
+    private function cachePath(string $view, string $cacheKey): string
+    {
+        $viewPath = resource_path('views/'.str_replace('.', DIRECTORY_SEPARATOR, $view).'.blade.php');
+        $viewVersion = is_file($viewPath) ? (string) filemtime($viewPath) : 'unknown';
+
+        return storage_path('app/pdf-cache/'.hash('sha256', $cacheKey.'|'.$viewVersion).'.pdf');
     }
 
     private function inlineLocalAssets(string $html): string
