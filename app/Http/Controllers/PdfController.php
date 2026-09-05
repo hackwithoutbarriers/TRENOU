@@ -32,8 +32,11 @@ class PdfController extends Controller
 
         return $this->pdfDocumentService->downloadView(
             'pdf.certificat',
-            ['attestation' => $attestation],
-            'certificat-'.Str::slug($attestation->numero_attestation).'.pdf',
+            [
+                'attestation' => $attestation,
+                'serialNumber' => $attestation->documentNumber('CERT'),
+            ],
+            'certificat-'.Str::slug($attestation->documentNumber('CERT')).'.pdf',
             'a4',
             'landscape'
         );
@@ -45,8 +48,11 @@ class PdfController extends Controller
 
         return $this->pdfDocumentService->downloadView(
             'pdf.attestation',
-            ['attestation' => $attestation],
-            'attestation-'.Str::slug($attestation->numero_attestation).'.pdf',
+            [
+                'attestation' => $attestation,
+                'serialNumber' => $attestation->documentNumber('ATT'),
+            ],
+            'attestation-'.Str::slug($attestation->documentNumber('ATT')).'.pdf',
             'a4',
             'portrait'
         );
