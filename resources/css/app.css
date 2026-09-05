@@ -16,6 +16,15 @@ body {
     font-family: var(--font-sans);
 }
 
+:where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid rgb(245 158 11 / 0.8);
+    outline-offset: 3px;
+}
+
+:where(button, input, select, textarea):disabled {
+    cursor: not-allowed;
+}
+
 .hero-slide {
     position: absolute;
     inset: 0;
@@ -54,6 +63,19 @@ body {
     100% {
         opacity: 0;
         transform: scale(1.02);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .hero-slide,
+    .testimonial-track,
+    .animate-ping {
+        animation: none;
+        transform: none;
     }
 }
 
