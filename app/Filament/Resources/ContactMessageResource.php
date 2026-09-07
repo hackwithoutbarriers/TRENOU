@@ -23,6 +23,13 @@ class ContactMessageResource extends Resource
 
     protected static ?string $navigationLabel = 'Messages de contact';
 
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Communication';
+    }
+
     public static function getNavigationBadge(): ?string
     {
         $count = static::getModel()::query()->whereNull('read_at')->count();

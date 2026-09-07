@@ -20,6 +20,10 @@ class ProjetResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestion';
 
+    protected static ?string $navigationLabel = 'Projets';
+
+    protected static ?int $navigationSort = 1;
+
     public static function form(Form $form): Form
     {
         return $form
