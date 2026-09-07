@@ -11,6 +11,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -46,6 +47,13 @@ class AdminPanelProvider extends PanelProvider
             ->resources([
                 ContactMessageResource::class,
                 ProjetResource::class,
+            ])
+            ->navigationItems([
+                NavigationItem::make('Messages de contact')
+                    ->group('Communication')
+                    ->icon('heroicon-o-envelope')
+                    ->badge(fn (): ?string => ContactMessageResource::getNavigationBadge())
+                    ->url(fn (): string => ContactMessageResource::getNavigationUrl()),
             ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
