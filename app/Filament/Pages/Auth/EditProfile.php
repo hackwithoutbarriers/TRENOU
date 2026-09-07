@@ -41,7 +41,6 @@ class EditProfile extends BaseEditProfile
                         TextInput::make('two_factor_secret')
                             ->label('Clé 2FA')
                             ->readOnly()
-                            ->copyable()
                             ->helperText('Ajoutez cette clé dans Google Authenticator ou Microsoft Authenticator.')
                             ->dehydrated(true)
                             ->default(fn (): string => $this->getUser()->two_factor_secret ?? $this->generateTwoFactorSecret()),
