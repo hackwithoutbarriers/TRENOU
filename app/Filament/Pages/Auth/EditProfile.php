@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Auth;
 
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Pages\Auth\EditProfile as BaseEditProfile;
@@ -14,25 +15,46 @@ class EditProfile extends BaseEditProfile
     {
         return $form
             ->schema([
-                $this->getNameFormComponent(),
-                $this->getEmailFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
-                TextInput::make('two_factor_secret')
-                    ->label('Clé 2FA')
-                    ->readOnly()
-                    ->copyable()
-                    ->helperText('Ajoutez cette clé dans votre application d’authentification (Google Authenticator, Microsoft Authenticator, etc.).')
-                    ->dehydrated(true)
-                    ->default(fn (): string => $this->getUser()->two_factor_secret ?? $this->generateTwoFactorSecret()),
-                TextInput::make('two_factor_code')
-                    ->label('Code de vérification')
-                    ->numeric()
-                    ->length(6)
-                    ->prefixIcon('heroicon-o-shield-check')
-                    ->helperText('Saisissez le code affiché par votre application pour confirmer l’activation du 2FA.')
-                    ->dehydrated(false)
-                    ->visible(fn (): bool => filled($this->getUser()->two_factor_secret) && blank($this->getUser()->two_factor_confirmed_at)),
+                Section::make('Informations personnelles')
+                    ->description('Modifiez les informations utilisées pour votre compte administrateur.')
+                    ->schema([
+                        $this->getNameFormComponent()
+                            ->label('Nom complet')
+                            ->autocomplete('name'),
+                        $this->getEmailFormComponent()
+                            ->label('Adresse e-mail')
+                            ->autocomplete('email'),
+                    ]),
+                Section::make('Sécurité')
+                    ->description('Laissez les champs de mot de passe vides pour conserver votre mot de passe actuel.')
+                    ->schema([
+                        $this->getPasswordFormComponent()
+                            ->label('Nouveau mot de passe')
+                            ->autocomplete('new-password'),
+                        $this->getPasswordConfirmationFormComponent()
+                            ->label('Confirmation du nouveau mot de passe')
+                            ->autocomplete('new-password'),
+                    ]),
+                Section::make('Authentification à deux facteurs')
+                    ->description('Renforcez la sécurité du compte avec une application d’authentification.')
+                    ->schema([
+                        TextInput::make('two_factor_secret')
+                            ->label('Clé 2FA')
+                            ->readOnly()
+                            ->copyable()
+                            ->helperText('Ajoutez cette clé dans Google Authenticator ou Microsoft Authenticator.')
+                            ->dehydrated(true)
+                            ->default(fn (): string => $this->getUser()->two_factor_secret ?? $this->generateTwoFactorSecret()),
+                        TextInput::make('two_factor_code')
+                            ->label('Code de vérification')
+                            ->numeric()
+                            ->length(6)
+                            ->prefixIcon('heroicon-o-shield-check')
+                            ->autocomplete('one-time-code')
+                            ->helperText('Saisissez le code affiché par votre application pour confirmer l’activation du 2FA.')
+                            ->dehydrated(false)
+                            ->visible(fn (): bool => filled($this->getUser()->two_factor_secret) && blank($this->getUser()->two_factor_confirmed_at)),
+                    ]),
             ]);
     }
 
