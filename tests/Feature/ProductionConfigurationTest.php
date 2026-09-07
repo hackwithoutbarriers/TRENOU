@@ -53,4 +53,13 @@ class ProductionConfigurationTest extends TestCase
             secure_asset('images/logo/alu-la-solution-full.webp'),
         );
     }
+
+    public function test_admin_message_and_profile_pages_require_admin_authentication(): void
+    {
+        $this->get('/admin/contact-messages')
+            ->assertRedirect('/admin/login');
+
+        $this->get('/admin/profile')
+            ->assertRedirect('/admin/login');
+    }
 }
