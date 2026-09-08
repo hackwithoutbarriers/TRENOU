@@ -45,11 +45,28 @@ Ne pas téléverser / ne pas inclure dans le paquet final :
 5. Configurez `APP_KEY`, `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL`, la base de données, le mail et les autres variables nécessaires.
 6. Après une modification du `Dockerfile` ou de `composer.lock`, utilisez **Clear build cache & deploy**.
 
+### Persistance gratuite recommandée
+
+Le système de fichiers du service Render Free est éphémère. Pour conserver les
+données pendant la phase de test, utilisez une base PostgreSQL Neon Free et un
+bucket Cloudflare R2. Dans Render, configurez `DB_CONNECTION=pgsql` avec les
+identifiants Neon, puis `FILESYSTEM_DISK=s3` avec les variables AWS/R2
+(`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_BUCKET`, `AWS_ENDPOINT`).
+Les fichiers uploadés (images et documents) sont alors indépendants des
+déploiements Render.
+
+Avant la bascule, exportez `database/database.sqlite` et copiez
+`storage/app/public` afin de migrer les données existantes vers Neon et R2.
+
 Exécutez les migrations depuis un shell Render après le premier déploiement :
 
 ```bash
 php artisan migrate --force
+php artisan db:seed --class=ProjetSeeder --force
 ```
+
+Le seeder des projets est idempotent et utilise `firstOrCreate` : il complète une
+base vide sans écraser les projets déjà édités depuis l’administration.
 
 ## Vérification finale
 
