@@ -137,6 +137,7 @@ ENV PATH="/usr/local/lib/node_modules/npm/bin:${PATH}" \
 RUN test -f public/index.php
 RUN mkdir -p \
         database \
+        bootstrap/cache \
         storage/app/public \
         storage/framework/cache \
         storage/framework/sessions \
